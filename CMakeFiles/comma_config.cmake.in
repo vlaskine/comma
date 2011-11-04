@@ -1,0 +1,51 @@
+#-----------------------------------------------------------------------------
+#
+# comma_config.cmake - comma CMake configuration file for external projects.
+#
+# This file is configured by comma and used by the use_comma.cmake module
+# to load comma's settings for an external project.
+@comma_CONFIG_INSTALL_ONLY@
+
+SET(comma_INCLUDE_DIRS "@comma_INCLUDE_DIRS_CONFIG@")
+
+SET(comma_LIBRARY_DIRS "@comma_LIBRARY_DIRS_CONFIG@")
+
+SET( comma_ALL_LIBRARIES "@comma_ALL_LIBRARIES@" )
+SET( comma_ALL_EXTERNAL_LIBRARIES "@comma_ALL_EXTERNAL_LIBRARIES@" )
+
+# The comma binary executable directories.  Note that if
+# comma_CONFIGURATION_TYPES is set (see below) then these directories
+# will be the parent directories under which there will be a directory
+# of runtime binaries for each configuration type.
+SET(comma_EXECUTABLE_DIRS "@comma_EXECUTABLE_DIRS_CONFIG@")
+
+# The comma runtime library directories.  Note that if
+# comma_CONFIGURATION_TYPES is set (see below) then these directories
+# will be the parent directories under which there will be a directory
+# of runtime libraries for each configuration type.
+SET(comma_RUNTIME_LIBRARY_DIRS "@comma_RUNTIME_LIBRARY_DIRS_CONFIG@")
+
+# The runtime library path variable name e.g. LD_LIBRARY_PATH,
+# this environment variable should be set to comma_RUNTIME_LIBRARY_DIRS
+SET(comma_RUNTIME_PATH_VAR_NAME "@SHARED_LIBRARY_PATH_VAR_NAME@")
+
+SET(comma_REQUIRED_C_FLAGS "@comma_REQUIRED_C_FLAGS@")
+SET(comma_REQUIRED_CXX_FLAGS "@comma_REQUIRED_CXX_FLAGS@")
+SET(comma_REQUIRED_EXE_LINKER_FLAGS "@comma_REQUIRED_EXE_LINKER_FLAGS@")
+SET(comma_REQUIRED_SHARED_LINKER_FLAGS "@comma_REQUIRED_SHARED_LINKER_FLAGS@")
+SET(comma_REQUIRED_MODULE_LINKER_FLAGS "@comma_REQUIRED_MODULE_LINKER_FLAGS@")
+
+SET(comma_MAJOR_VERSION "@comma_MAJOR_VERSION@")
+SET(comma_MINOR_VERSION "@comma_MINOR_VERSION@")
+SET(comma_BUILD_VERSION "@comma_BUILD_VERSION@")
+
+SET(comma_USE_FILE "@comma_USE_FILE@")
+
+SET(comma_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
+
+IF( WIN32 )
+  ADD_DEFINITIONS( -DNOMINMAX )
+ENDIF(WIN32)
+
+INCLUDE_DIRECTORIES(${comma_INCLUDE_DIRS})
+LINK_DIRECTORIES(${comma_LIBRARY_DIRS})

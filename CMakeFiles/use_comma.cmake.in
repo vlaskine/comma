@@ -1,0 +1,27 @@
+#
+# This module is provided as comma USE_FILE by comma_config.cmake.  It can
+# be INCLUDEd in a project to load the needed compiler and linker
+# settings to use Utility Functions.
+#
+
+IF(NOT comma_USE_FILE_INCLUDED)
+  SET(comma_USE_FILE_INCLUDED 1)
+
+  # Add compiler flags needed to use comma.
+  #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${comma_REQUIRED_C_FLAGS}")
+  #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${comma_REQUIRED_CXX_FLAGS}")
+  #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${comma_REQUIRED_EXE_LINKER_FLAGS}")
+  #SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${comma_REQUIRED_SHARED_LINKER_FLAGS}")
+  #SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${comma_REQUIRED_MODULE_LINKER_FLAGS}")
+
+  # Add include directories needed to use comma
+  INCLUDE_DIRECTORIES(${comma_INCLUDE_DIRS})
+
+  # Add link directories needed to use comma.
+  LINK_DIRECTORIES(${comma_LIBRARY_DIRS})
+
+IF( WIN32 )
+  ADD_DEFINITION( NOMINMAX )
+ENDIF(WIN32)
+
+ENDIF(NOT comma_USE_FILE_INCLUDED)
