@@ -25,14 +25,14 @@ SET(comma_DIR_MESSAGE "comma not found.  Set the comma_DIR cmake cache entry to 
 IF ( NOT comma_DIR )
   # Get the system search path as a list.
   IF(UNIX)
-    STRING(REGEX MATCHALL "[^:]+" comma_DIR_SEARKH1 "$ENV{PATH}")
+    STRING(REGEX MATCHALL "[^:]+" comma_DIR_SEARCH1 "$ENV{PATH}")
   ELSE(UNIX)
-    STRING(REGEX REPLACE "\\\\" "/" comma_DIR_SEARKH1 "$ENV{PATH}")
+    STRING(REGEX REPLACE "\\\\" "/" comma_DIR_SEARCH1 "$ENV{PATH}")
   ENDIF(UNIX)
   IF ( WIN32 )
     # Assume this path exists.
-    SET ( comma_DIR_SEARKH1
-      ${comma_DIR_SEARKH1}
+    SET ( comma_DIR_SEARCH1
+      ${comma_DIR_SEARCH1}
       "C:/Program Files/comma"
     )
   ENDIF ( WIN32 )

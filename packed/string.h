@@ -27,14 +27,14 @@ namespace comma { namespace packed {
 
 /// packed fixed-length string
 template < size_t S, char Padding = ' ' >
-class string : public packed::Field< string< S, Padding >, std::string, S >
+class string : public packed::field< string< S, Padding >, std::string, S >
 {
     public:
         enum { size = S };
 
         typedef std::string Type;
 
-        typedef packed::Field< string< S, Padding >, std::string, S > base_type;
+        typedef packed::field< string< S, Padding >, std::string, S > base_type;
 
         static const std::string& default_value()
         {
@@ -44,7 +44,7 @@ class string : public packed::Field< string< S, Padding >, std::string, S >
 
         static void pack( char* storage, const std::string& value )
         {
-            if( value.length() != size ) { COMMA_THROW_STREAM( comma::Exception, "expected " << size << " bytes, got " << value.length() << " (\"" << value << "\")" ); }
+            if( value.length() != size ) { COMMA_THROW_STREAM( comma::exception, "expected " << size << " bytes, got " << value.length() << " (\"" << value << "\")" ); }
             ::memcpy( storage, value.c_str(), size );
         }
 

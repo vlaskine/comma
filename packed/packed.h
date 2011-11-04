@@ -20,7 +20,6 @@
 #define COMMA_PACKED_PACKED_HEADER_H_
 
 #include <comma/packed/byte.h>
-#include <comma/packed/char.h>
 #include <comma/packed/little_endian.h>
 #include <comma/packed/big_endian.h>
 #include <comma/packed/string.h>

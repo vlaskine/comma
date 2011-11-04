@@ -36,31 +36,31 @@ namespace comma {
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__QNXNTO__)
 
-typedef uint16_t u_int_16;
-typedef uint32_t u_int_32;
-typedef uint64_t u_int_64;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
 
-typedef int16_t int_16;
-typedef int32_t int_32;
-typedef int64_t int_64;
+typedef int16_t int16;
+typedef int32_t int32;
+typedef int64_t int64;
 
 #elif defined(WIN32)
 
-typedef unsigned __int16 u_int_16;
-typedef unsigned __int32 u_int_32;
-typedef unsigned __int64 u_int_64;
+typedef unsigned __int16 uint16;
+typedef unsigned __int32 uint32;
+typedef unsigned __int64 uint64;
 
 typedef __int16 int_16;
 typedef __int32 int_32;
 typedef __int64 int_64;
 
 // Windows, you know...
-BOOST_STATIC_ASSERT( sizeof( u_int_16 ) == 2 );
-BOOST_STATIC_ASSERT( sizeof( u_int_32 ) == 4 );
-BOOST_STATIC_ASSERT( sizeof( u_int_64 ) == 8 );
-BOOST_STATIC_ASSERT( sizeof( int_16 ) == 2 );
-BOOST_STATIC_ASSERT( sizeof( int_32 ) == 4 );
-BOOST_STATIC_ASSERT( sizeof( int_64 ) == 8 );
+BOOST_STATIC_ASSERT( sizeof( uint16 ) == 2 );
+BOOST_STATIC_ASSERT( sizeof( uint32 ) == 4 );
+BOOST_STATIC_ASSERT( sizeof( uint64 ) == 8 );
+BOOST_STATIC_ASSERT( sizeof( int16 ) == 2 );
+BOOST_STATIC_ASSERT( sizeof( int32 ) == 4 );
+BOOST_STATIC_ASSERT( sizeof( int64 ) == 8 );
 
 #endif
 

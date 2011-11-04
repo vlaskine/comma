@@ -43,7 +43,7 @@ template <> struct big_endian_traits< comma::uint32 >
 };
 
 template < typename T >
-class big_endian_int : public packed::Field< big_endian_int< T >, T, sizeof( T ) >
+class big_endian_int : public packed::field< big_endian_int< T >, T, sizeof( T ) >
 {
     public:
         enum { size = sizeof( T ) };
@@ -52,7 +52,7 @@ class big_endian_int : public packed::Field< big_endian_int< T >, T, sizeof( T )
 
         typedef T type;
 
-        typedef packed::Field< big_endian_int< T >, T, size > base_type;
+        typedef packed::field< big_endian_int< T >, T, size > base_type;
 
         static type default_value() { return 0; }
 

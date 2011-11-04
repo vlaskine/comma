@@ -27,12 +27,12 @@ namespace comma { namespace packed {
 namespace detail {
 
 template < unsigned int Size, bool Signed > struct little_endian_traits { typedef void type; };
-template <> struct little_endian_traits< 2, true > { typedef comma::Int16 type; };
-template <> struct little_endian_traits< 2, false > { typedef comma::UInt16 type; };
-template <> struct little_endian_traits< 3, true > { typedef comma::Int32 type; };
-template <> struct little_endian_traits< 3, false > { typedef comma::UInt32 type; };
-template <> struct little_endian_traits< 4, true > { typedef comma::Int32 type; };
-template <> struct little_endian_traits< 4, false > { typedef comma::UInt32 type; };
+template <> struct little_endian_traits< 2, true > { typedef comma::int16 type; };
+template <> struct little_endian_traits< 2, false > { typedef comma::uint16 type; };
+template <> struct little_endian_traits< 3, true > { typedef comma::int32 type; };
+template <> struct little_endian_traits< 3, false > { typedef comma::uint32 type; };
+template <> struct little_endian_traits< 4, true > { typedef comma::int32 type; };
+template <> struct little_endian_traits< 4, false > { typedef comma::uint32 type; };
     
 template < unsigned int Size, bool Signed >
 struct little_endian_int : public packed::field< little_endian_int< Size, Signed >, typename little_endian_traits< Size, Signed >::type, Size >

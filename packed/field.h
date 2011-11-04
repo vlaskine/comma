@@ -38,10 +38,10 @@ class field
         field()
         {
             BOOST_STATIC_ASSERT( sizeof( field ) == size );
-            Derived::pack( storage_, Derived::defaultValue() );
+            Derived::pack( storage_, Derived::default_value() );
         }
 
-        field( const Type& t )
+        field( const type& t )
         {
             BOOST_STATIC_ASSERT( sizeof( field ) == size );
             Derived::pack( storage_, t );
@@ -53,27 +53,27 @@ class field
             operator=( rhs );
         }
 
-        Type operator()() const { return Derived::unpack( storage_ ); }
+        type operator()() const { return Derived::unpack( storage_ ); }
 
         const char* data() const throw() { return storage_; }
 
         char* data() throw() { return storage_; }
 
-        void pack( char* storage, const Type& t );
+        void pack( char* storage, const type& t );
 
-        Type unpack( const char* storage );
+        type unpack( const char* storage );
 
         const Derived& operator=( const Derived& rhs ) { ::memcpy( storage_, rhs.storage_, size ); return reinterpret_cast< const Derived& >( *this ); }
 
-        const Derived& operator=( const Type& rhs ) { Derived::pack( storage_, rhs ); return reinterpret_cast< const Derived& >( *this ); }
+        const Derived& operator=( const type& rhs ) { Derived::pack( storage_, rhs ); return reinterpret_cast< const Derived& >( *this ); }
 
         bool operator==( const Derived& rhs ) { return ::memcmp( storage_, rhs.storage_, size ) == 0; }
 
-        bool operator==( const Type& rhs ) { return Derived::unpack( storage_ ) == rhs; }
+        bool operator==( const type& rhs ) { return Derived::unpack( storage_ ) == rhs; }
 
         bool operator!=( const Derived& rhs ) { return !operator==( rhs ); }
 
-        bool operator!=( const Type& rhs ) { return !operator==( rhs ); }
+        bool operator!=( const type& rhs ) { return !operator==( rhs ); }
 
     private:
         char storage_[ size ];
