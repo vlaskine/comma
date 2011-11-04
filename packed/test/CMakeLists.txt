@@ -1,0 +1,6 @@
+SET( kit packed )
+SET( dir ${SOURCE_CODE_BASE_DIR}/${kit}/test )
+FILE( GLOB source ${dir}/*_test.cpp )
+FILE( GLOB extras ${dir}/*.cpp ${dir}/*.h )
+ADD_EXECUTABLE( test_${kit} ${source} )
+TARGET_LINK_LIBRARIES( test_${kit} comma_base ${comma_ALL_EXTERNAL_LIBRARIES} ${GTEST_BOTH_LIBRARIES} )
