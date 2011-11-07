@@ -29,7 +29,7 @@ struct hello
 {
     std::string filename;
     int a;
-    nested nested;
+    nested n;
     std::string s;
 };
 
@@ -57,7 +57,7 @@ template <> struct traits< hello >
     {
         v.apply( "filename", hello.filename );
         v.apply( "a", hello.a );
-        v.apply( "nested", hello.nested );
+        v.apply( "nested", hello.n );
         v.apply( "s", hello.s );
     }
 
@@ -66,7 +66,7 @@ template <> struct traits< hello >
     {
         v.apply( "filename", hello.filename );
         v.apply( "a", hello.a );
-        v.apply( "nested", hello.nested );
+        v.apply( "nested", hello.n );
         v.apply( "s", hello.s );
     }
 };
@@ -165,41 +165,41 @@ namespace comma { namespace name_value { namespace test {
 TEST( name_value, get )
 {
     parser named_values("filename,,,,,s");
-    hello hello = named_values.get<hello>("test.csv;a=2;nested/b=3;nested/c=0.2;unNamed2;world");
+    hello h = named_values.get<hello>("test.csv;a=2;nested/b=3;nested/c=0.2;unNamed2;world");
     
     hello expected;
     expected.filename = "test.csv";
     expected.a = 2;
-    expected.nested.b = 3;
-    expected.nested.c = 0.2;
+    expected.n.b = 3;
+    expected.n.c = 0.2;
     expected.s = "world";
     
-    EXPECT_EQ( comma::serialization::to_string::apply(hello), comma::serialization::to_string::apply(expected) );
+    EXPECT_EQ( comma::serialization::to_string::apply(h), comma::serialization::to_string::apply(expected) );
 
     parser named_values2("filename",'-', ':', false);
-    hello = named_values2.get("test.csv-a:2-b:3-c:0.2-s:world", hello());
+    h = named_values2.get("test.csv-a:2-b:3-c:0.2-s:world", hello());
 
-    EXPECT_EQ( comma::serialization::to_string::apply(hello), comma::serialization::to_string::apply(expected) );
+    EXPECT_EQ( comma::serialization::to_string::apply(h), comma::serialization::to_string::apply(expected) );
 
-    EXPECT_THROW( hello = named_values.get<hello>("a=b=c;a=2;nested/b=3;nested/c=0.2;unNamed2;s=world"), comma::exception );
-    EXPECT_THROW( hello = named_values.get<hello>("file=test.csv;a=2;nested/b=3;nested/c=0.2;unNamed2;s=world"), comma::exception );
+    EXPECT_THROW( h = named_values.get<hello>("a=b=c;a=2;nested/b=3;nested/c=0.2;unNamed2;s=world"), comma::exception );
+    EXPECT_THROW( h = named_values.get<hello>("file=test.csv;a=2;nested/b=3;nested/c=0.2;unNamed2;s=world"), comma::exception );
 }
 
 TEST( name_value, put )
 {
     parser named_values;
     std::string string = "a=2;nested/b=3;nested/c=0.2;s=world";
-    hello hello = named_values.get<hello>( string );
+    hello h = named_values.get<hello>( string );
 
     string = "filename=;" + string;
-    EXPECT_EQ( named_values.put(hello), string );
+    EXPECT_EQ( named_values.put(h), string );
 
     parser named_values2('-',':',false);
     string = "a:2-b:3-c:0.2-s:world";
-    hello = named_values2.get<hello>( string );
+    h = named_values2.get<hello>( string );
 
     string = "filename:-" + string;
-    EXPECT_EQ( named_values2.put(hello), string );
+    EXPECT_EQ( named_values2.put(h), string );
 }
 
 TEST( name_value, map )
@@ -309,6 +309,6 @@ TEST( name_value, optional )
 
 int main( int argc, char* argv[] )
 {
-    ::testing::InitGoogletest(&argc, argv);
+    ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

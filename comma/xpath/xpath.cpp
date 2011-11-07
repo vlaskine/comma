@@ -19,17 +19,17 @@
 #include <boost/lexical_cast.hpp>
 #include <comma/base/exception.h>
 #include <comma/string/split.h>
-#include "./x_path.h"
+#include "./xpath.h"
 
 #include <iostream>
 
 namespace comma {
 
-x_path::element::element() {}
+xpath::element::element() {}
 
-x_path::element::element( const x_path::element& rhs ) { operator=( rhs ); }
+xpath::element::element( const xpath::element& rhs ) { operator=( rhs ); }
 
-x_path::element::element( const std::string& n )
+xpath::element::element( const std::string& n )
 {
     std::vector< std::string > v = split( n, '[' );
     switch( v.size() )
@@ -48,65 +48,65 @@ x_path::element::element( const std::string& n )
     }    
 }
 
-x_path::element::element( const std::string& n, std::size_t idx )
+xpath::element::element( const std::string& n, std::size_t idx )
     : name( n )
     , index( idx )
 {
     if( index && n == "" ) { COMMA_THROW_STREAM( comma::exception, "got non-empty index in empty element" ); }
 }
 
-x_path::element::element( const std::string& n, boost::optional< std::size_t > idx )
+xpath::element::element( const std::string& n, boost::optional< std::size_t > idx )
     : name( n )
     , index( idx )
 {
     if( index && name == "" ) { COMMA_THROW_STREAM( comma::exception, "got non-empty index in empty element" ); }
 }
 
-bool x_path::element::operator==( const x_path::element& rhs ) const
+bool xpath::element::operator==( const xpath::element& rhs ) const
 {
     return name == rhs.name && index == rhs.index;
 }
             
-bool x_path::element::operator!=( const x_path::element& rhs ) const { return !operator==( rhs ); }
+bool xpath::element::operator!=( const xpath::element& rhs ) const { return !operator==( rhs ); }
 
-bool x_path::element::operator<( const x_path::element& rhs ) const
+bool xpath::element::operator<( const xpath::element& rhs ) const
 {
     return name == rhs.name && index && !rhs.index;
 }
 
-bool x_path::element::operator<=( const x_path::element& rhs ) const
+bool xpath::element::operator<=( const xpath::element& rhs ) const
 {
     return operator<( rhs ) || operator==( rhs );
 }
 
-std::string x_path::element::to_string() const
+std::string xpath::element::to_string() const
 {
     if( !index ) { return name; }
     return name + "[" + boost::lexical_cast< std::string >( *index ) + "]";
 }
 
-x_path::x_path() {}
+xpath::xpath() {}
 
-x_path::x_path( const x_path& rhs ) { operator=( rhs ); }
+xpath::xpath( const xpath& rhs ) { operator=( rhs ); }
 
-static void init( x_path& x, const std::string& str, char delimiter )
+static void init( xpath& x, const std::string& str, char delimiter )
 {
     if( str == "" ) { return; }
     std::vector< std::string > v = comma::split( str, delimiter );
     for( std::size_t i = 0; i < v.size(); ++i )
     {
         if( i > 0 && v[i] == "" ) { continue; }
-        x.elements.push_back( x_path::element( v[i] ) );
+        x.elements.push_back( xpath::element( v[i] ) );
     }	
 }
 
-x_path::x_path( const char* str, char delimiter ) { init( *this, str, delimiter ); }
+xpath::xpath( const char* str, char delimiter ) { init( *this, str, delimiter ); }
 
-x_path::x_path( const std::string& str, char delimiter ) { init( *this, str, delimiter ); }
+xpath::xpath( const std::string& str, char delimiter ) { init( *this, str, delimiter ); }
 
-x_path::x_path( const x_path::element& rhs, char delimiter ) { init( *this, "", delimiter ); operator/=( rhs ); }
+xpath::xpath( const xpath::element& rhs, char delimiter ) { init( *this, "", delimiter ); operator/=( rhs ); }
 
-const x_path& x_path::operator/=( const x_path& rhs )
+const xpath& xpath::operator/=( const xpath& rhs )
 {
     if( !rhs.elements.empty() )
     {
@@ -118,17 +118,17 @@ const x_path& x_path::operator/=( const x_path& rhs )
     return *this;
 }
 
-const x_path& x_path::operator/=( const x_path::element& rhs )
+const xpath& xpath::operator/=( const xpath::element& rhs )
 {
-    if( rhs != x_path::element( "" ) ) { elements.push_back( rhs ); }
+    if( rhs != xpath::element( "" ) ) { elements.push_back( rhs ); }
     return *this;
 }
 
-const x_path& x_path::operator/=( const std::string& rhs ) { return operator/=( x_path( rhs ) ); }
+const xpath& xpath::operator/=( const std::string& rhs ) { return operator/=( xpath( rhs ) ); }
 
-x_path x_path::tail() const
+xpath xpath::tail() const
 {
-    x_path x;
+    xpath x;
     if( elements.size() > 1 )
     {
         x.elements.resize( elements.size() - 1 );
@@ -137,16 +137,16 @@ x_path x_path::tail() const
     return x;
 }
 
-x_path x_path::operator/( const x_path& rhs ) const { x_path x( *this ); x /= rhs; return x; }
+xpath xpath::operator/( const xpath& rhs ) const { xpath x( *this ); x /= rhs; return x; }
 
-x_path x_path::operator/( const x_path::element& rhs ) const { x_path x( *this ); x /= rhs; return x; }
+xpath xpath::operator/( const xpath::element& rhs ) const { xpath x( *this ); x /= rhs; return x; }
 
-x_path x_path::operator/( const std::string& rhs ) const { x_path x( *this ); x /= rhs; return x; }
+xpath xpath::operator/( const std::string& rhs ) const { xpath x( *this ); x /= rhs; return x; }
 
-x_path x_path::head() const
+xpath xpath::head() const
 {
-    if( *this == x_path( "/" ) ) { return *this; }
-    x_path x;
+    if( *this == xpath( "/" ) ) { return *this; }
+    xpath x;
     if( elements.size() > 1 )
     {
         x.elements.resize( elements.size() - 1 );
@@ -155,7 +155,7 @@ x_path x_path::head() const
     return x;
 }
 
-std::string x_path::to_string( char delimiter ) const
+std::string xpath::to_string( char delimiter ) const
 {
     if( elements.empty() ) { return ""; }
     std::ostringstream oss;
@@ -164,7 +164,7 @@ std::string x_path::to_string( char delimiter ) const
     return oss.str();
 }
 
-bool x_path::operator==( const x_path& rhs ) const
+bool xpath::operator==( const xpath& rhs ) const
 {
     if( elements.size() != rhs.elements.size() ) { return false; }
     for( std::size_t i = 0; i < elements.size(); ++i )
@@ -174,9 +174,9 @@ bool x_path::operator==( const x_path& rhs ) const
     return true;
 } 
 
-bool x_path::operator!=( const x_path& rhs ) const { return !operator==( rhs ); }
+bool xpath::operator!=( const xpath& rhs ) const { return !operator==( rhs ); }
 
-bool x_path::operator<( const x_path& rhs ) const
+bool xpath::operator<( const xpath& rhs ) const
 {
     if( elements.size() < rhs.elements.size() ) { return false; }
     if( elements.empty() ) { return false; }
@@ -191,10 +191,10 @@ bool x_path::operator<( const x_path& rhs ) const
            : elements[i] <= rhs.elements.back();
 }
 
-bool x_path::operator<=( const x_path& rhs ) const { return operator<( rhs ) || operator==( rhs ); }
+bool xpath::operator<=( const xpath& rhs ) const { return operator<( rhs ) || operator==( rhs ); }
 
-std::ostream& operator<<( std::ostream& os, const x_path& x ) { return os << x.to_string(); }
+std::ostream& operator<<( std::ostream& os, const xpath& x ) { return os << x.to_string(); }
 
-std::ostream& operator<<( std::ostream& os, const x_path::element& e ) { return os << e.to_string(); }
+std::ostream& operator<<( std::ostream& os, const xpath::element& e ) { return os << e.to_string(); }
 
 } // namespace comma {

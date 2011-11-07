@@ -57,7 +57,7 @@ class map
         typedef std::multimap< std::string, std::string > map_type;
 
         /// return name-value map
-        const map_type& map() const { return m_map; }
+        const map_type& get() const { return m_map; }
 
     private:
         void init( const comma::name_value::impl::options& options );

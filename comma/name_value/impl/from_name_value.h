@@ -30,7 +30,7 @@
 #include <comma/string/string.h>
 #include <comma/visiting/while.h>
 #include <comma/visiting/visit.h>
-#include <comma/x_path/x_path.h>
+#include <comma/xpath/xpath.h>
 
 namespace comma { namespace name_value { namespace impl {
 
@@ -68,7 +68,7 @@ public:
 private:
     const map_type& m_values;
     bool m_full_path_as_name;
-    x_path m_xpath;
+    xpath m_xpath;
     std::deque< bool > m_empty;
     static void lexical_cast( bool& v, const std::string& s ) { v = s == "" || boost::lexical_cast< bool >( s ); }
     static void lexical_cast( boost::posix_time::ptime& v, const std::string& s ) { v = boost::posix_time::from_iso_string( s ); }
@@ -76,10 +76,10 @@ private:
     {
         std::vector< std::string > t = comma::split( s, '.' );
         if( t.size() > 2 ) { COMMA_THROW_STREAM( comma::exception, "expected duration in seconds, got " << s ); }
-        comma::int_64 seconds = boost::lexical_cast< comma::int_64 >( t[0] );
+        comma::int64 seconds = boost::lexical_cast< comma::int64 >( t[0] );
         if( t[1].length() > 6 ) { t[1] = t[1].substr( 0, 6 ); }
         else { t[1] += std::string( 6 - t[1].length(), '0' ); }
-        comma::int_32 microseconds = boost::lexical_cast< comma::int_32 >( t[1] );
+        comma::int32 microseconds = boost::lexical_cast< comma::int32 >( t[1] );
         if( seconds < 0 ) { microseconds = -microseconds; }
         v = boost::posix_time::seconds( seconds ) + boost::posix_time::microseconds( microseconds );
     }
@@ -122,8 +122,8 @@ inline void from_name_value::apply( const K& name, boost::shared_ptr< T >& value
 template < typename K, typename T >
 inline void from_name_value::apply( const K& name, T& value )
 {
-    m_xpath /= x_path::element( name );
-    visiting::while<    !boost::is_fundamental< T >::value
+    m_xpath /= xpath::element( name );
+    visiting::do_while<    !boost::is_fundamental< T >::value
                      && !boost::is_same< T, boost::posix_time::ptime >::value
                      && !boost::is_same< T, boost::posix_time::time_duration >::value
                      && !boost::is_same< T, std::string >::value >::visit( name, value, *this );

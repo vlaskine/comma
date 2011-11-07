@@ -23,7 +23,7 @@ namespace comma { namespace visiting {
 /// a trivial helper class for easier definition of final types
 /// at which recursion stops 
 template < bool NotFinal >
-struct while
+struct do_while
 {
     template < typename K, typename V, typename T >
     static void visit( const K& name, T& t, V& v ) { v.apply_next( name, t ); }
@@ -34,7 +34,7 @@ struct while
 
 /// if not final type, continue recursion
 template <>
-struct while< false >
+struct do_while< false >
 {
     template < typename K, typename V, typename T >
     static void visit( const K& name, T& t, V& v ) { v.apply_final( name, t ); }

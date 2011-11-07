@@ -30,7 +30,7 @@
 namespace comma {
 
 /// xpath, like "hello/world[5]/moon"
-class x_path
+class xpath
 {
     public:
         /// xpath element
@@ -74,45 +74,45 @@ class x_path
         };
         
         /// constructor
-        x_path( const std::string& str, char delimiter = '/' );
+        xpath( const std::string& str, char delimiter = '/' );
         
         /// constructor
-        x_path( const char* str, char delimiter = '/' );
+        xpath( const char* str, char delimiter = '/' );
 
         /// constructor
-        x_path( const x_path::element& rhs, char delimiter = '/' );
+        xpath( const xpath::element& rhs, char delimiter = '/' );
         
         /// default constructor
-        x_path();
+        xpath();
         
         /// copy constructor
-        x_path( const x_path& rhs );
+        xpath( const xpath& rhs );
         
         /// append
-        const x_path& operator/=( const x_path& );
-        const x_path& operator/=( const x_path::element& );
-        const x_path& operator/=( const std::string& );
-        x_path operator/( const x_path& ) const;
-        x_path operator/( const x_path::element& ) const;
-        x_path operator/( const std::string& ) const;
+        const xpath& operator/=( const xpath& );
+        const xpath& operator/=( const xpath::element& );
+        const xpath& operator/=( const std::string& );
+        xpath operator/( const xpath& ) const;
+        xpath operator/( const xpath::element& ) const;
+        xpath operator/( const std::string& ) const;
         
         /// comparisons
-        bool operator==( const x_path& rhs ) const;
+        bool operator==( const xpath& rhs ) const;
         
         /// comparison
-        bool operator!=( const x_path& rhs ) const;
+        bool operator!=( const xpath& rhs ) const;
         
         /// return true, if it's a subpath of rhs, e.g hello/world < hello
-        bool operator<( const x_path& rhs ) const;
+        bool operator<( const xpath& rhs ) const;
         
         /// comparison
-        bool operator<=( const x_path& rhs ) const;
+        bool operator<=( const xpath& rhs ) const;
         
         /// return xpath without the first element; if empty, return empty xpath
-        x_path tail() const;
+        xpath tail() const;
         
         /// return xpath without the last element; if empty, return empty xpath
-        x_path head() const;
+        xpath head() const;
         
         /// xpath elements
         std::vector< element > elements;
@@ -122,10 +122,10 @@ class x_path
 };
 
 /// output
-std::ostream& operator<<( std::ostream& os, const x_path& x );
+std::ostream& operator<<( std::ostream& os, const xpath& x );
 
 /// output
-std::ostream& operator<<( std::ostream& os, const x_path::element& e );
+std::ostream& operator<<( std::ostream& os, const xpath::element& e );
 
 } // namespace comma {
 

@@ -27,7 +27,7 @@
 #include <comma/string/string.h>
 #include <comma/visiting/while.h>
 #include <comma/visiting/visit.h>
-#include <comma/x_path/x_path.h>
+#include <comma/xpath/xpath.h>
 
 namespace comma
 {
@@ -82,7 +82,7 @@ private:
     char m_delimiter;
     bool m_full_path_as_name;
     std::vector< std::string > m_strings;
-    x_path m_xpath;
+    xpath m_xpath;
      
 };
 
@@ -107,8 +107,8 @@ inline void to_name_value::apply( const K& name, const boost::shared_ptr< T >& v
 template < typename K, typename T >
 inline void to_name_value::apply( const K& name, const T& value )
 {
-    m_xpath /= x_path::Element( name );
-    visiting::while<    !boost::is_fundamental< T >::value
+    m_xpath /= xpath::element( name );
+    visiting::do_while<    !boost::is_fundamental< T >::value
                      && !boost::is_same< T, std::string >::value >::visit( name, value, *this );
     m_xpath = m_xpath.head();
 }

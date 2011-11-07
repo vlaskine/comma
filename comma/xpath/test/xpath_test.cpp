@@ -16,84 +16,84 @@
 // License along with comma. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
-#include <comma/x_path/x_path.h>
+#include <comma/xpath/xpath.h>
 #include <comma/base/exception.h>
 
-TEST( x_path, contruction )
+TEST( xpath, contruction )
 {
     {
-        comma::x_path x;
+        comma::xpath x;
         EXPECT_EQ( x.to_string(), "" );
-        comma::x_path y( "hello/world[1]/moon[2]/cloud[5]/bye" );
+        comma::xpath y( "hello/world[1]/moon[2]/cloud[5]/bye" );
         EXPECT_EQ( y.to_string(), "hello/world[1]/moon[2]/cloud[5]/bye" );
         x = y;
         EXPECT_EQ( x.to_string(), y.to_string() );
-        EXPECT_EQ( comma::x_path( y ).to_string(), "hello/world[1]/moon[2]/cloud[5]/bye" );
-        EXPECT_THROW( comma::x_path( "hello[5" ), comma::exception );
-        EXPECT_THROW( comma::x_path( "[5]" ), comma::exception );
-        EXPECT_THROW( comma::x_path( "hello/[5]" ), comma::exception );
+        EXPECT_EQ( comma::xpath( y ).to_string(), "hello/world[1]/moon[2]/cloud[5]/bye" );
+        EXPECT_THROW( comma::xpath( "hello[5" ), comma::exception );
+        EXPECT_THROW( comma::xpath( "[5]" ), comma::exception );
+        EXPECT_THROW( comma::xpath( "hello/[5]" ), comma::exception );
     }
     {
-        EXPECT_EQ( comma::x_path(), comma::x_path( "" ) );
-        EXPECT_EQ( comma::x_path( "/" ), comma::x_path( "///" ) );
-        EXPECT_EQ( comma::x_path( "hello/" ), comma::x_path( "hello" ) );
+        EXPECT_EQ( comma::xpath(), comma::xpath( "" ) );
+        EXPECT_EQ( comma::xpath( "/" ), comma::xpath( "///" ) );
+        EXPECT_EQ( comma::xpath( "hello/" ), comma::xpath( "hello" ) );
     }
 }
 
-TEST( x_path, comparisons )
+TEST( xpath, comparisons )
 {
-    EXPECT_TRUE( !( comma::x_path() < comma::x_path() ) );
-    EXPECT_TRUE( !( comma::x_path() < comma::x_path( "/" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "/" ) < comma::x_path( "/" ) ) );
-    EXPECT_TRUE( !( comma::x_path() < comma::x_path( "hello" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "hello" ) < comma::x_path( "world" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "world" ) < comma::x_path( "hello" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "hello" ) < comma::x_path( "hello[10]" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "hello[10]/world" ) < comma::x_path( "hello/world" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "hello/world[0]" ) < comma::x_path( "hello/world[1]" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "world/cloud[7]/hello[10]" ) < comma::x_path( "world/cloud[8]/hello" ) ) );
-    EXPECT_TRUE( !( comma::x_path( "world/cloud[7]/hello" ) < comma::x_path( "world/cloud/hello" ) ) );
+    EXPECT_TRUE( !( comma::xpath() < comma::xpath() ) );
+    EXPECT_TRUE( !( comma::xpath() < comma::xpath( "/" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "/" ) < comma::xpath( "/" ) ) );
+    EXPECT_TRUE( !( comma::xpath() < comma::xpath( "hello" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "hello" ) < comma::xpath( "world" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "world" ) < comma::xpath( "hello" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "hello" ) < comma::xpath( "hello[10]" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "hello[10]/world" ) < comma::xpath( "hello/world" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "hello/world[0]" ) < comma::xpath( "hello/world[1]" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "world/cloud[7]/hello[10]" ) < comma::xpath( "world/cloud[8]/hello" ) ) );
+    EXPECT_TRUE( !( comma::xpath( "world/cloud[7]/hello" ) < comma::xpath( "world/cloud/hello" ) ) );
     
-    EXPECT_TRUE( comma::x_path( "/" ) < comma::x_path() );
-    EXPECT_TRUE( comma::x_path( "hello" ) < comma::x_path() );
-    EXPECT_TRUE( comma::x_path( "hello[10]" ) < comma::x_path( "hello" ) );
-    EXPECT_TRUE( comma::x_path( "/hello[10]" ) < comma::x_path( "/hello" ) );
-    EXPECT_TRUE( comma::x_path( "hello[10]/x" ) < comma::x_path( "hello" ) );
-    EXPECT_TRUE( comma::x_path( "world/cloud[7]/hello[10]" ) < comma::x_path( "world/cloud[7]/hello" ) );
+    EXPECT_TRUE( comma::xpath( "/" ) < comma::xpath() );
+    EXPECT_TRUE( comma::xpath( "hello" ) < comma::xpath() );
+    EXPECT_TRUE( comma::xpath( "hello[10]" ) < comma::xpath( "hello" ) );
+    EXPECT_TRUE( comma::xpath( "/hello[10]" ) < comma::xpath( "/hello" ) );
+    EXPECT_TRUE( comma::xpath( "hello[10]/x" ) < comma::xpath( "hello" ) );
+    EXPECT_TRUE( comma::xpath( "world/cloud[7]/hello[10]" ) < comma::xpath( "world/cloud[7]/hello" ) );
 }
 
-TEST( x_path, concatenation )
+TEST( xpath, concatenation )
 {
-    EXPECT_EQ( comma::x_path() / comma::x_path(), comma::x_path() );
-    EXPECT_EQ( comma::x_path( "hello" ) / comma::x_path(), comma::x_path( "hello" ) );
-    EXPECT_EQ( comma::x_path() / comma::x_path( "hello" ), comma::x_path( "hello" ) );
-    EXPECT_EQ( comma::x_path( "/" ) / comma::x_path(), comma::x_path( "/" ) );
-    EXPECT_EQ( comma::x_path( "/" ) / comma::x_path( "/" ), comma::x_path( "/" ) );
-    EXPECT_EQ( comma::x_path( "hello" ) / comma::x_path( "world" ), comma::x_path( "hello/world" ) );
-    EXPECT_EQ( comma::x_path( "hello" ) / comma::x_path( "/world" ), comma::x_path( "hello/world" ) );
-    EXPECT_EQ( comma::x_path( "hello[1]" ) / comma::x_path( "world[2]" ), comma::x_path( "hello[1]/world[2]" ) );
+    EXPECT_EQ( comma::xpath() / comma::xpath(), comma::xpath() );
+    EXPECT_EQ( comma::xpath( "hello" ) / comma::xpath(), comma::xpath( "hello" ) );
+    EXPECT_EQ( comma::xpath() / comma::xpath( "hello" ), comma::xpath( "hello" ) );
+    EXPECT_EQ( comma::xpath( "/" ) / comma::xpath(), comma::xpath( "/" ) );
+    EXPECT_EQ( comma::xpath( "/" ) / comma::xpath( "/" ), comma::xpath( "/" ) );
+    EXPECT_EQ( comma::xpath( "hello" ) / comma::xpath( "world" ), comma::xpath( "hello/world" ) );
+    EXPECT_EQ( comma::xpath( "hello" ) / comma::xpath( "/world" ), comma::xpath( "hello/world" ) );
+    EXPECT_EQ( comma::xpath( "hello[1]" ) / comma::xpath( "world[2]" ), comma::xpath( "hello[1]/world[2]" ) );
 }
 
-TEST( x_path, tail )
+TEST( xpath, tail )
 {
-    EXPECT_EQ( comma::x_path().tail(), comma::x_path() );
-    EXPECT_EQ( comma::x_path( "/" ).tail(), comma::x_path() );
-    EXPECT_EQ( comma::x_path( "hello" ).tail(), comma::x_path() );
-    EXPECT_EQ( comma::x_path( "/hello" ).tail(), comma::x_path( "hello" ) );
-    EXPECT_EQ( comma::x_path( "/hello[5]" ).tail(), comma::x_path( "hello[5]" ) );
-    EXPECT_EQ( comma::x_path( "hello[5]/world" ).tail(), comma::x_path( "world" ) );
-    EXPECT_EQ( comma::x_path( "/hello[5]/world" ).tail(), comma::x_path( "hello[5]/world" ) );
+    EXPECT_EQ( comma::xpath().tail(), comma::xpath() );
+    EXPECT_EQ( comma::xpath( "/" ).tail(), comma::xpath() );
+    EXPECT_EQ( comma::xpath( "hello" ).tail(), comma::xpath() );
+    EXPECT_EQ( comma::xpath( "/hello" ).tail(), comma::xpath( "hello" ) );
+    EXPECT_EQ( comma::xpath( "/hello[5]" ).tail(), comma::xpath( "hello[5]" ) );
+    EXPECT_EQ( comma::xpath( "hello[5]/world" ).tail(), comma::xpath( "world" ) );
+    EXPECT_EQ( comma::xpath( "/hello[5]/world" ).tail(), comma::xpath( "hello[5]/world" ) );
 }
 
-TEST( x_path, head )
+TEST( xpath, head )
 {
-    EXPECT_EQ( comma::x_path().head(), comma::x_path() );
-    EXPECT_EQ( comma::x_path( "/" ).head(), comma::x_path( "/" ) );
-    EXPECT_EQ( comma::x_path( "hello" ).head(), comma::x_path() );
-    EXPECT_EQ( comma::x_path( "/hello" ).head(), comma::x_path( "/" ) );
-    EXPECT_EQ( comma::x_path( "hello/world" ).head(), comma::x_path( "hello" ) );
-    EXPECT_EQ( comma::x_path( "/hello/world" ).head(), comma::x_path( "/hello" ) );
-    EXPECT_EQ( comma::x_path( "hello[1]/world[2]" ).head(), comma::x_path( "hello[1]" ) );
+    EXPECT_EQ( comma::xpath().head(), comma::xpath() );
+    EXPECT_EQ( comma::xpath( "/" ).head(), comma::xpath( "/" ) );
+    EXPECT_EQ( comma::xpath( "hello" ).head(), comma::xpath() );
+    EXPECT_EQ( comma::xpath( "/hello" ).head(), comma::xpath( "/" ) );
+    EXPECT_EQ( comma::xpath( "hello/world" ).head(), comma::xpath( "hello" ) );
+    EXPECT_EQ( comma::xpath( "/hello/world" ).head(), comma::xpath( "/hello" ) );
+    EXPECT_EQ( comma::xpath( "hello[1]/world[2]" ).head(), comma::xpath( "hello[1]" ) );
 }
 
 int main( int argc, char* argv[] )

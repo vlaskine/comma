@@ -80,17 +80,17 @@ inline parser::parser( const std::string& fields, char delimiter, char value_del
 template < typename S >
 inline S parser::get( const std::string& line, const S& default_s ) const
 {
-    map::mapType m = map( line, m_options ).map();
-    name_values::impl::from_name_value fromname_value( m, m_options.m_full_path_as_name );
+    map::map_type m = map( line, m_options ).get();
+    name_value::impl::from_name_value from_name_value( m, m_options.m_full_path_as_name );
     S s = default_s;
-    visiting::apply( fromname_value ).to( s );
+    visiting::apply( from_name_value ).to( s );
     return s;
 }
 
 template < typename S >
 inline std::string parser::put( const S& s ) const
 {
-    name_values::impl::to_name_value toname_value( m_options.m_value_delimiter, m_options.m_full_path_as_name );
+    name_value::impl::to_name_value toname_value( m_options.m_value_delimiter, m_options.m_full_path_as_name );
     visiting::apply( toname_value ).to( s );
     return join( toname_value.strings(), m_options.m_delimiter );
 }
