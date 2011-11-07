@@ -82,6 +82,17 @@ FIND_PACKAGE( Boost COMPONENTS thread filesystem system date_time )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${Boost_LIBRARY_DIRS} )
 
+IF( WIN32 )
+    FIND_PATH( Eigen_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library PATHS $ENV{EIGEN_ROOT} )
+ELSE( WIN32 )
+    FIND_PATH( Eigen_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library PATHS $ENV{EIGEN_ROOT} /usr/include/eigen3 /usr/local/include/eigen3 )
+ENDIF( WIN32 )
+IF( NOT EXISTS ${Eigen_INCLUDE_DIR} )
+    MESSAGE( "could not find Eigen - should be the path containing the Eigen 3 directory and /Eigen/Eigen, /Eigen/Core, etc..." )
+ELSE( NOT EXISTS ${Eigen_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES( ${Eigen_INCLUDE_DIR} )
+ENDIF( NOT EXISTS ${Eigen_INCLUDE_DIR} )
+
 IF( comma_BUILD_TESTS )
     FIND_PACKAGE( GTest )
     INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
@@ -122,6 +133,8 @@ INSTALL( FILES ${comma_PACKAGE_CMAKEFILES}
 # add sources
 
 ADD_SUBDIRECTORY( base )
+ADD_SUBDIRECTORY( eigen )
 ADD_SUBDIRECTORY( packed )
 ADD_SUBDIRECTORY( string )
+ADD_SUBDIRECTORY( visiting )
 ADD_SUBDIRECTORY( x_path )
