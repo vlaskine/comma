@@ -50,9 +50,9 @@ typedef unsigned __int16 uint16;
 typedef unsigned __int32 uint32;
 typedef unsigned __int64 uint64;
 
-typedef __int16 int_16;
-typedef __int32 int_32;
-typedef __int64 int_64;
+typedef __int16 int16;
+typedef __int32 int32;
+typedef __int64 int64;
 
 // Windows, you know...
 BOOST_STATIC_ASSERT( sizeof( uint16 ) == 2 );

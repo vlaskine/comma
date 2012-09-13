@@ -19,7 +19,7 @@
 #define COMMA_APPLICATION_NAME_VALUE_OPTIONS_H
 
 #include <comma/string/string.h>
-#include <comma/x_path/x_path.h>
+#include <comma/xpath/xpath.h>
 
 namespace comma
 {
@@ -58,7 +58,7 @@ inline options::options( const std::string& fields, char delimiter, char value_d
     if( full_path_as_name ) { return; }
     for( std::size_t i = 0; i < m_names.size(); ++i )
     {
-        if( m_names[i] != "" ) { m_names[i] = x_path( m_names[i] ).elements.back().to_string(); }
+        if( m_names[i] != "" ) { m_names[i] = xpath( m_names[i] ).elements.back().to_string(); }
     }
 }
 
