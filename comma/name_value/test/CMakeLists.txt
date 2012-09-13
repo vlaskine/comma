@@ -1,6 +1,6 @@
-SET(KIT name_value)
+SET( KIT name_value )
 
-FILE( GLOB source ${SOURCE_CODE_BASE_DIR}/${KIT}/test/*test.cpp )
+FILE( GLOB source ${SOURCE_CODE_BASE_DIR}/${KIT}/test/*_test.cpp )
 
 ADD_EXECUTABLE( test_${KIT} ${source} )
 
