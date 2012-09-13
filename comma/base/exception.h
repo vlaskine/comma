@@ -35,65 +35,65 @@ namespace comma {
 #ifndef COMMA_THROW
 
 #if defined( WIN32 )
-#define COMMA_THROW( exception, message )      \
-  throw exception( message, __FILE__, __LINE__, __FUNCSIG__ );
+    #define COMMA_THROW_IMPL_( exception, message )      \
+    throw exception( message, __FILE__, __LINE__, __FUNCSIG__ );
 #elif defined( __GNUC__ )
-#define COMMA_THROW( exception, message )      \
-  throw exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ );
+    #define COMMA_THROW_IMPL_( exception, message )      \
+    throw exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ );
 #else
-#define COMMA_THROW( exception, message )      \
-  throw exception( message, __FILE__, __LINE__, __FUNCTION__ );
+    #define COMMA_THROW_IMPL_( exception, message )      \
+    throw exception( message, __FILE__, __LINE__, __FUNCTION__ );
 #endif
 
-#define COMMA_THROW_STREAM( exception, strmessage ) {std::ostringstream CommaThrowStr##__LINE__; CommaThrowStr##__LINE__ << strmessage;  COMMA_THROW(exception, CommaThrowStr##__LINE__.str());}
+#define COMMA_THROW( exception, strmessage ) { std::ostringstream CommaThrowStr##__LINE__; CommaThrowStr##__LINE__ << strmessage;  COMMA_THROW_IMPL_( exception, CommaThrowStr##__LINE__.str() ); }
+
+#define COMMA_THROW_STREAM( exception, strmessage ) COMMA_THROW( exception, strmessage )
 
 #endif // COMMA_THROW
 
 #ifndef COMMA_RETHROW
 
-#define COMMA_RETHROW()      \
-  throw;
+#define COMMA_RETHROW() throw;
 
 #endif // COMMA_RETHROW
 
 class exception : public std::runtime_error
 {
-public:
+    public:
 
-    /// constructor
-    exception( const char *message, const char *filename, unsigned long line_number, const char *function_name );
+        /// constructor
+        exception( const char *message, const char *filename, unsigned long line_number, const char *function_name );
 
-    /// constructor
-    exception( const std::string& message, const char *filename, unsigned long line_number, const char *function_name );
+        /// constructor
+        exception( const std::string& message, const char *filename, unsigned long line_number, const char *function_name );
 
-    /// destructor
-    virtual ~exception() throw() {}
+        /// destructor
+        virtual ~exception() throw() {}
 
-    /// e.what is the complete formatted info
-    const char*     what(void) const throw();
+        /// e.what is the complete formatted info
+        const char*     what(void) const throw();
 
-    /// just the error message
-    const char*     error() const;
+        /// just the error message
+        const char*     error() const;
 
-    /// filename
-    const char*     file() const;
+        /// filename
+        const char*     file() const;
 
-    /// line number
-    unsigned long   line() const;
+        /// line number
+        unsigned long   line() const;
 
-    /// function name
-    const char*     function() const;
+        /// function name
+        const char*     function() const;
 
-protected:
+    protected:
 
-    virtual void    generate_formatted_string();
+        virtual void    generate_formatted_string();
 
-    std::string     m_message;
-    std::string     m_filename;
-    unsigned long   m_line_number;
-    std::string     m_function_name;
-    std::string     m_formatted_message;
-
+        std::string     m_message;
+        std::string     m_filename;
+        unsigned long   m_line_number;
+        std::string     m_function_name;
+        std::string     m_formatted_message;
 };
 
 }  // namespace comma

@@ -23,10 +23,10 @@ namespace comma { namespace visiting {
 namespace impl {
 
 template < typename V >
-class applier
+class applier_
 {
     public:
-        applier( V& v ) : m_visitor( v ) {}
+        applier_( V& v ) : m_visitor( v ) {}
         template < typename T > V& to( const T& t ) { m_visitor.apply( "", t ); return m_visitor; }
         template < typename T > V& to( T& t ) { m_visitor.apply( "", t ); return m_visitor; }
     private:
@@ -45,7 +45,7 @@ inline void apply( Visitor& v, const T& t ) { v.apply( "", t ); }
 
 /// apply visitor function
 template < typename Visitor >
-inline impl::applier< Visitor > apply( Visitor& v ) { return impl::applier< Visitor >( v ); }
+inline impl::applier_< Visitor > apply( Visitor& v ) { return impl::applier_< Visitor >( v ); }
 
 } } // namespace comma { namespace visiting {
 

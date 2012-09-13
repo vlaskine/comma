@@ -1,4 +1,4 @@
-SET( PROJECT "x_path" )
+SET( PROJECT "xpath" )
 SET( TARGET_NAME comma_${PROJECT} )
 
 FILE( GLOB source   ${SOURCE_CODE_BASE_DIR}/${PROJECT}/*.cpp)

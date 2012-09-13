@@ -123,10 +123,10 @@ template < typename K, typename T >
 inline void from_name_value::apply( const K& name, T& value )
 {
     m_xpath /= x_path::element( name );
-    visiting::while<    !boost::is_fundamental< T >::value
-                     && !boost::is_same< T, boost::posix_time::ptime >::value
-                     && !boost::is_same< T, boost::posix_time::time_duration >::value
-                     && !boost::is_same< T, std::string >::value >::visit( name, value, *this );
+    visiting::while_true<    !boost::is_fundamental< T >::value
+                          && !boost::is_same< T, boost::posix_time::ptime >::value
+                          && !boost::is_same< T, boost::posix_time::time_duration >::value
+                          && !boost::is_same< T, std::string >::value >::visit( name, value, *this );
     m_xpath = m_xpath.head();
 }
 
