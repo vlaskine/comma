@@ -136,6 +136,7 @@ INSTALL( FILES ${comma_PACKAGE_CMAKEFILES}
 #-----------------------------------------------------------------------------
 # add sources
 
+ADD_SUBDIRECTORY( application )
 ADD_SUBDIRECTORY( base )
 ADD_SUBDIRECTORY( dispatch )
 ADD_SUBDIRECTORY( eigen )
