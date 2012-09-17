@@ -22,10 +22,9 @@
 #include <vector>
 #include <boost/thread/thread_time.hpp>
 #include <comma/csv/options.h>
-#include <comma/csv/Stream.h>
-#include <comma/Io/Publisher.h>
-#include <comma/Timing/Play.h>
-#include <comma/Timing/time.h>
+#include <comma/csv/stream.h>
+#include <comma/io/publisher.h>
+#include "./play."
 
 namespace comma {
 

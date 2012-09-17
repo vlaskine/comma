@@ -83,17 +83,6 @@ FIND_PACKAGE( Boost COMPONENTS filesystem system date_time )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${Boost_LIBRARY_DIRS} )
 
-IF( WIN32 )
-    FIND_PATH( Eigen_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library PATHS $ENV{EIGEN_ROOT} )
-ELSE( WIN32 )
-    FIND_PATH( Eigen_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library PATHS $ENV{EIGEN_ROOT} /usr/include/eigen3 /usr/local/include/eigen3 )
-ENDIF( WIN32 )
-IF( NOT EXISTS ${Eigen_INCLUDE_DIR} )
-    MESSAGE( "could not find Eigen - should be the path containing the Eigen 3 directory and /Eigen/Eigen, /Eigen/Core, etc..." )
-ELSE( NOT EXISTS ${Eigen_INCLUDE_DIR} )
-INCLUDE_DIRECTORIES( ${Eigen_INCLUDE_DIR} )
-ENDIF( NOT EXISTS ${Eigen_INCLUDE_DIR} )
-
 IF( comma_BUILD_TESTS )
     #FIND_PACKAGE( GTest )
     #INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
@@ -104,8 +93,16 @@ IF( comma_BUILD_TESTS )
 ENDIF( comma_BUILD_TESTS )
 
 SET( comma_ALL_LIBRARIES 
-                       debug comma_Base-d
-                       optimized comma_Base )
+        debug comma_application-d
+        optimized comma_application
+        debug comma_base-d
+        optimized comma_base
+        debug comma_csv-d
+        optimized comma_csv
+        debug comma_string-d
+        optimized comma_string
+        debug comma_xpath-d
+        optimized comma_xpath )
 
 IF(WIN32)
     SET( comma_ALL_EXTERNAL_LIBRARIES Ws2_32.lib )
@@ -141,7 +138,6 @@ ADD_SUBDIRECTORY( application )
 ADD_SUBDIRECTORY( base )
 ADD_SUBDIRECTORY( csv )
 ADD_SUBDIRECTORY( dispatch )
-ADD_SUBDIRECTORY( eigen )
 ADD_SUBDIRECTORY( name_value )
 ADD_SUBDIRECTORY( packed )
 ADD_SUBDIRECTORY( string )
