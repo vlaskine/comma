@@ -1,7 +1,7 @@
 #include <boost/optional.hpp>
 #include <boost/program_options.hpp>
-#include <comma/csv/ProgramOptions.h>
-#include <comma/csv/Applications/Split/Split.h>
+#include <comma/csv/impl/program_options.h>
+#include <comma/csv/applications/split/split.h>
 
 int main( int argc, char** argv )
 {
@@ -17,7 +17,7 @@ int main( int argc, char** argv )
             ( "size,c", boost::program_options::value< unsigned int >( &size ), "packet size, only full packets will be written" )
             ( "period,t", boost::program_options::value< double >( &period ), "period in seconds after which a new file is created" )
             ( "suffix,s", boost::program_options::value< std::string >( &extension ), "filename extension; default will be csv or bin, depending whether it is ascii or binary" );
-        description.add( comma::csv::ProgramOptions::description() );
+        description.add( comma::csv::program_options::description() );
         boost::program_options::variables_map vm;
         boost::program_options::store( boost::program_options::parse_command_line( argc, argv, description), vm );
         boost::program_options::parsed_options parsed = boost::program_options::command_line_parser(argc, argv).options( description ).allow_unregistered().run();
@@ -37,14 +37,14 @@ int main( int argc, char** argv )
             std::cerr << std::endl;
             return 1;
         }
-        comma::csv::Options csv = comma::csv::ProgramOptions::get( vm );
+        comma::csv::options csv = comma::csv::program_options::get( vm );
         if( csv.binary() ) { size = csv.format().size(); }
         boost::optional< boost::posix_time::time_duration > duration;
         if( period > 0 ) { duration = boost::posix_time::microseconds( period * 1e6 ); }
         std::string suffix;
         if( extension.empty() ) { suffix = csv.binary() || size > 0 ? ".bin" : ".csv"; }
         else { suffix += "."; suffix += extension; }
-        comma::csv::Applications::Split split( duration, suffix, csv );
+        comma::csv::applications::split split( duration, suffix, csv );
         if( size == 0 )
         {
             std::string line;

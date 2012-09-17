@@ -23,13 +23,13 @@
 #endif
 #include <iostream>
 
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/csv/Options.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/csv/options.h>
 #include <comma/csv/Stream.h>
 #include <comma/NameValue/Parser.h>
 #include <comma/Timing/Play.h>
-#include <comma/csv/Applications/Play/Multiplay.h>
+#include <comma/csv/applications/Play/Multiplay.h>
 
 static void usage()
 {
@@ -86,8 +86,8 @@ int main( int argc, char** argv )
     boost::scoped_ptr< comma::Multiplay > multiPlay;
     try
     {
-        const boost::array< comma::SignalFlag::Signals, 2 > signals = { { comma::SignalFlag::sigint, comma::SignalFlag::sigterm } };
-        comma::SignalFlag shutdownFlag( signals );
+        const boost::array< comma::signal_flag::Signals, 2 > signals = { { comma::signal_flag::sigint, comma::signal_flag::sigterm } };
+        comma::signal_flag shutdownFlag( signals );
         comma::command_line_options options( argc, argv );
         if( options.exists( "--help,-h" ) ) { usage(); }
         options.assertMutuallyExclusive( "--speed,--slow,--slowdown" );
@@ -97,25 +97,25 @@ int main( int argc, char** argv )
         std::string to = options.value< std::string>( "--to", "" );
         bool quiet =  options.exists( "--quiet" );
         bool flush =  !options.exists( "--no-flush" );
-        std::vector< std::string > configStrings = options.unnamed("--quiet,--no-flush","--slow,--slowdown,--speed,--precision,--binary,--fields,--clients,--from,--to");
-        if( configStrings.empty() ) { configStrings.push_back( "-;-" ); }
-        comma::csv::Options csvOptions( argc, argv );
+        std::vector< std::string > configstrings = options.unnamed("--quiet,--no-flush","--slow,--slowdown,--speed,--precision,--binary,--fields,--clients,--from,--to");
+        if( configstrings.empty() ) { configstrings.push_back( "-;-" ); }
+        comma::csv::options csvoptions( argc, argv );
         comma::NameValue::Parser nameValue("filename,output", ';', '=', false );
-        std::vector< comma::Multiplay::SourceConfig > sourceConfigs( configStrings.size() );
-        comma::Multiplay::SourceConfig defaultConfig( "-", options.value( "--clients", 0 ), csvOptions );
-        for( unsigned int i = 0U; i < configStrings.size(); ++i )
+        std::vector< comma::Multiplay::SourceConfig > sourceConfigs( configstrings.size() );
+        comma::Multiplay::SourceConfig defaultConfig( "-", options.value( "--clients", 0 ), csvoptions );
+        for( unsigned int i = 0U; i < configstrings.size(); ++i )
         {
-            sourceConfigs[i] = nameValue.get< comma::Multiplay::SourceConfig >( configStrings[i], defaultConfig );
+            sourceConfigs[i] = nameValue.get< comma::Multiplay::SourceConfig >( configstrings[i], defaultConfig );
         }
         boost::posix_time::ptime fromtime;
         if( !from.empty() )
         {
-            fromtime = boost::posix_time::frois_o_string( from );
+            fromtime = boost::posix_time::from_iso_string( from );
         }
         boost::posix_time::ptime totime;
         if( !to.empty() )
         {
-            totime = boost::posix_time::frois_o_string( to );
+            totime = boost::posix_time::from_iso_string( to );
         }
         multiPlay.reset( new comma::Multiplay( sourceConfigs, 1.0 / speed, quiet, boost::posix_time::milliseconds(precision), fromtime, totime, flush ) );
         while( multiPlay->read() && !shutdownFlag && std::cout.good() && !std::cout.bad() &&!std::cout.eof() )

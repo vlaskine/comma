@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <boost/thread/thread_time.hpp>
-#include <comma/csv/Options.h>
+#include <comma/csv/options.h>
 #include <comma/csv/Stream.h>
 #include <comma/Io/Publisher.h>
 #include <comma/Timing/Play.h>
@@ -44,11 +44,11 @@ class Multiplay
         {
             std::string outputFileName;
             std::size_t minNumberOfClients;
-            csv::Options options;
+            csv::options options;
             boost::posix_time::time_duration offset;
-            SourceConfig( const std::string& output, const csv::Options& csv ) :
+            SourceConfig( const std::string& output, const csv::options& csv ) :
                 outputFileName( output ), minNumberOfClients( 0 ), options( csv ) {}
-            SourceConfig( const std::string& output, std::size_t n, const csv::Options& csv ) :
+            SourceConfig( const std::string& output, std::size_t n, const csv::options& csv ) :
                 outputFileName( output ), minNumberOfClients( n ), options( csv ) {}
             SourceConfig() {};
         };

@@ -19,13 +19,13 @@
 #include <iostream>
 #include <string>
 #include <boost/scoped_ptr.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Types.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/types.h>
 #include <comma/csv/Stream.h>
 #include <comma/Io/Stream.h>
 #include <comma/NameValue/Parser.h>
-#include <comma/String/String.h>
+#include <comma/string/string.h>
 #include <comma/visiting/traits.h>
 
 static void usage()
@@ -107,18 +107,18 @@ int main( int ac, char** av )
         bool discard = !options.exists( "--no-discard" );
         boost::optional< boost::posix_time::time_duration > bound;
         if( options.exists( "--bound" ) ) { bound = boost::posix_time::microseconds( options.value< double >( "--bound" ) * 1000000 ); }
-        comma::csv::Options stdin_csv( options, "t" );
+        comma::csv::options stdin_csv( options, "t" );
         //bool has_block = stdin_csv.has_field( "block" );
         comma::csv::input_stream< Point > stdin_stream( std::cin, stdin_csv );
         std::string properties = options.unnamed( "--by-lower,--by-upper,--nearest,--timestamp-only,--time-only,--no-discard", "--binary,-b,--delimiter,-d,--fields,-f,--bound" )[0];
         comma::Io::IStream is( comma::split( properties, ';' )[0] );
         comma::NameValue::Parser parser( "filename" );
-        comma::csv::Options csv = parser.get< comma::csv::Options >( properties );
+        comma::csv::options csv = parser.get< comma::csv::options >( properties );
         if( csv.fields.empty() ) { csv.fields = "t"; }
         comma::csv::input_stream< Point > istream( *is, csv );
         std::pair< std::string, std::string > last;
         std::pair< boost::posix_time::ptime, boost::posix_time::ptime > last_timestamp;
-        comma::SignalFlag is_shutdown;
+        comma::signal_flag is_shutdown;
         while( !is_shutdown && std::cin.good() && !std::cin.eof() && is->good() && !is->eof() )
         {
             const Point* p = stdin_stream.read();

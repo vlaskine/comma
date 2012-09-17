@@ -75,13 +75,13 @@ struct handler_of_const : virtual public handler
 /// 
 ///             An example of the problem:
 ///                 - we have a vector of base-class pointers to polymorphic objects
-///                     of types A, B, C (dispatched types), etc. all derived from class Base
+///                     of types A, B, C (dispatched types), etc. all derived from class base
 ///                 - every type should be handled differently, but we don't want to
-///                     put the virtual methods for this handling in the Base class
+///                     put the virtual methods for this handling in the base class
 /// 
 ///             Solution (a double-dispatch pattern):
-///                 - classes A, B, C, etc just derive from the common base (Base),
-///                     but Base does not define any virtual methods for the derived
+///                 - classes A, B, C, etc just derive from the common base (base),
+///                     but base does not define any virtual methods for the derived
 ///                     classes
 ///                 - handler classes deriving from a common base Handler provide
 ///                     methods for handling various data types

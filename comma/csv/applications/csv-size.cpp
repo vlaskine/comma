@@ -17,7 +17,7 @@
 // License along with comma. If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
-#include <comma/Application/command_line_options.h>
+#include <comma/application/command_line_options.h>
 #include <comma/csv/format.h>
 
 using namespace comma;

@@ -26,13 +26,13 @@
 #include <boost/functional/hash.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/unordered_map.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Types.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/types.h>
 #include <comma/csv/Stream.h>
 #include <comma/Io/Stream.h>
 #include <comma/NameValue/Parser.h>
-#include <comma/String/String.h>
+#include <comma/string/string.h>
 #include <comma/visiting/traits.h>
 
 static void usage()
@@ -121,9 +121,9 @@ template <> struct traits< Input >
 } } // namespace comma { namespace visiting {
 
 static bool verbose;
-static comma::SignalFlag is_shutdown;
+static comma::signal_flag is_shutdown;
 static boost::scoped_ptr< comma::csv::input_stream< Input > > stdin_stream;
-static comma::csv::Options stdin_csv;
+static comma::csv::options stdin_csv;
 
 struct Input::Hash : public std::unary_function< Input, std::size_t >
 {
@@ -187,7 +187,7 @@ std::string set_fields_ascii( const std::string& fields, const std::string& samp
             ++Input::keys_size;
         }
         if( ( block_index_ && *block_index_ == i ) || ( id_index_ && *id_index_ == i ) ) { input_format_ += "ui"; continue; }
-        try { boost::posix_time::frois_o_string( v[i] ); input_format_ += "t"; }
+        try { boost::posix_time::from_iso_string( v[i] ); input_format_ += "t"; }
         catch( ... ) { input_format_ += "d"; }
     }
     std::cerr << "csv-calc: guessed format: " << input_format_.string() << std::endl;
@@ -230,12 +230,12 @@ int main( int ac, char** av )
         comma::command_line_options options( ac, av );
         if( options.exists( "--help,-h,--long-help" ) ) { usage( options.exists( "--long-help" ) ); }
         verbose = options.exists( "--verbose,-v" );
-        stdin_csv = comma::csv::Options( options );
+        stdin_csv = comma::csv::options( options );
         std::vector< std::string > unnamed = options.unnamed( "--verbose,-v", "--binary,-b,--delimiter,-d,--fields,-f" );
         if( unnamed.empty() ) { std::cerr << "csv-calc: please specify the second source" << std::endl; return 1; }
         if( unnamed.size() > 1 ) { std::cerr << "csv-calc: expected one file or stream to join, got " << comma::join( unnamed, ' ' ) << std::endl; return 1; }
         comma::NameValue::Parser parser( "filename", ';', '=', false );
-        comma::csv::Options filter_csv = parser.get< comma::csv::Options >( unnamed[0] );
+        comma::csv::options filter_csv = parser.get< comma::csv::options >( unnamed[0] );
         if( stdin_csv.binary() != filter_csv.binary() ) { std::cerr << "csv-calc: expected both streams ascii or both streams binary" << std::endl; return 1; }
         std::vector< std::string > v = comma::split( stdin_csv.fields, ',' );
         std::vector< std::string > w = comma::split( filter_csv.fields, ',' );

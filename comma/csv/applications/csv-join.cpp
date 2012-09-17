@@ -26,13 +26,13 @@
 #include <boost/functional/hash.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/unordered_map.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Types.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/types.h>
 #include <comma/csv/Stream.h>
 #include <comma/Io/Stream.h>
 #include <comma/NameValue/Parser.h>
-#include <comma/String/String.h>
+#include <comma/string/string.h>
 #include <comma/visiting/traits.h>
 
 static void usage( bool long_help = false )
@@ -50,7 +50,7 @@ static void usage( bool long_help = false )
     //std::cerr << "    --long-help: more help" << std::endl;
     std::cerr << "    --first-matching: output only the first matching record (a bit of hack for now, but we needed it)" << std::endl;
     std::cerr << "    --verbose,-v: more output to stderr" << std::endl;
-    std::cerr << comma::csv::Options::usage() << std::endl;
+    std::cerr << comma::csv::options::usage() << std::endl;
     std::cerr << std::endl;
     std::cerr << "examples:" << std::endl;
     std::cerr << "    todo" << std::endl;
@@ -104,12 +104,12 @@ template <> struct traits< Input >
 } } // namespace comma { namespace visiting {
 
 static bool verbose;
-static comma::SignalFlag is_shutdown;
+static comma::signal_flag is_shutdown;
 static boost::scoped_ptr< comma::Io::IStream > filter_transport;
 static boost::scoped_ptr< comma::csv::input_stream< Input > > stdin_stream;
 static boost::scoped_ptr< comma::csv::input_stream< Input > > filter_stream;
-static comma::csv::Options stdin_csv;
-static comma::csv::Options filter_csv;
+static comma::csv::options stdin_csv;
+static comma::csv::options filter_csv;
 static bool first_matching;
 
 struct Input::Hash : public std::unary_function< Input, std::size_t >
@@ -162,12 +162,12 @@ int main( int ac, char** av )
         if( options.exists( "--help,-h,--long-help" ) ) { usage( options.exists( "--long-help" ) ); }
         verbose = options.exists( "--verbose,-v" );
         first_matching = options.exists( "--first-matching" );
-        stdin_csv = comma::csv::Options( options );
+        stdin_csv = comma::csv::options( options );
         std::vector< std::string > unnamed = options.unnamed( "--verbose,-v,--first-matching", "--binary,-b,--delimiter,-d,--fields,-f" );
         if( unnamed.empty() ) { std::cerr << "csv-join: please specify the second source" << std::endl; return 1; }
         if( unnamed.size() > 1 ) { std::cerr << "csv-join: expected one file or stream to join, got " << comma::join( unnamed, ' ' ) << std::endl; return 1; }
         comma::NameValue::Parser parser( "filename", ';', '=', false );
-        filter_csv = parser.get< comma::csv::Options >( unnamed[0] );
+        filter_csv = parser.get< comma::csv::options >( unnamed[0] );
         if( stdin_csv.binary() != filter_csv.binary() ) { std::cerr << "csv-join: expected both streams ascii or both streams binary" << std::endl; return 1; }
         std::vector< std::string > v = comma::split( stdin_csv.fields, ',' );
         std::vector< std::string > w = comma::split( filter_csv.fields, ',' );

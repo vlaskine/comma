@@ -8,9 +8,9 @@
 #include <vector>
 #include <boost/crc.hpp>
 #include <boost/optional.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Types.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/types.h>
 
 static void usage()
 {
@@ -92,7 +92,7 @@ static typename Crc::value_type crc_( const char* buf, std::size_t size )
 template < typename Crc >
 static bool run_()
 {
-    comma::SignalFlag is_shutdown;
+    comma::signal_flag is_shutdown;
     if( binary )
     {
         #ifdef WIN32

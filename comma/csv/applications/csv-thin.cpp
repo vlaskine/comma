@@ -26,10 +26,10 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real.hpp>
 #include <boost/random/variate_generator.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Exception.h>
-#include <comma/Base/Types.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/exception.h>
+#include <comma/base/types.h>
 #include <comma/Io/FileDescriptor.h>
 #include <comma/Math/Compare.h>
 
@@ -83,7 +83,7 @@ int main( int ac, char** av )
 {
     try
     {
-        SignalFlag shutdownFlag;
+        signal_flag shutdownFlag;
         comma::command_line_options options( ac, av );
         if( options.exists( "--help,-h" ) || ac == 1 ) { usage(); }
         bool binary = options.exists( "--size,-s" );

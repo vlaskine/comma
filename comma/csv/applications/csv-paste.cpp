@@ -22,12 +22,12 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Base/Exception.h>
+#include <comma/application/command_line_options.h>
+#include <comma/base/exception.h>
 #include <comma/csv/format.h>
 #include <comma/Io/Stream.h>
-#include <comma/NameValue/Parser.h>
-#include <comma/String/String.h>
+#include <comma/name_value/parser.h>
+#include <comma/string/string.h>
 
 #ifdef WIN32
 #include <io.h>

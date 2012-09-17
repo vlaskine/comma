@@ -18,7 +18,7 @@
 
 #include <sstream>
 #include <boost/thread/thread.hpp>
-#include <comma/String/String.h>
+#include <comma/string/string.h>
 #include "./Multiplay.h"
 
 namespace comma {

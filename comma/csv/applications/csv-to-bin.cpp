@@ -24,10 +24,10 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
 #include <comma/csv/format.h>
-#include <comma/String/String.h>
+#include <comma/string/string.h>
 
 using namespace comma;
 
@@ -48,7 +48,7 @@ int main( int ac, char** av )
     #endif
     try
     {        
-        SignalFlag shutdownFlag;
+        signal_flag shutdownFlag;
         command_line_options options( ac, av );
         if( ac < 2 || options.exists( "--help" ) || options.exists( "-h" ) ) { usage(); }
         char delimiter = options.value( "--delimiter", ',' );

@@ -1,8 +1,8 @@
 #include <deque>
 #include <queue>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Types.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/types.h>
 #include <comma/csv/Stream.h>
 #include <comma/visiting/traits.h>
 
@@ -33,7 +33,7 @@ static void usage()
     std::cerr << "    --size=<value>: chop into blocks of size <value>" << std::endl;
     std::cerr << std::endl;
     std::cerr << "csv options" << std::endl;
-    std::cerr << comma::csv::Options::usage() << std::endl;
+    std::cerr << comma::csv::options::usage() << std::endl;
     std::cerr << std::endl;
     std::cerr << "examples" << std::endl;
     std::cerr << "    echo 0,0,0 > test.csv" << std::endl;
@@ -95,7 +95,7 @@ int main( int ac, char** av )
         comma::command_line_options options( ac, av );
         if( options.exists( "--help,-h" ) ) { usage(); }
         verbose = options.exists( "--verbose,-v" );
-        comma::csv::Options csv( options );
+        comma::csv::options csv( options );
         options.assertMutuallyExclusive( "--life,--size" );
         boost::optional< boost::posix_time::time_duration > life;
         boost::optional< std::size_t > chunk = options.optional< std::size_t >( "--size" );
@@ -110,7 +110,7 @@ int main( int ac, char** av )
         typedef std::deque< std::pair< Input, std::string > > Points;
         Points points;
         std::size_t block = 0;
-        comma::SignalFlag is_shutdown;
+        comma::signal_flag is_shutdown;
         while( !is_shutdown && std::cin.good() && !std::cin.eof() )
         {
             const Input* p = istream.read();

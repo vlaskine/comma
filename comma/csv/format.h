@@ -46,7 +46,7 @@ class format
 {
     public:
         /// types (implement more, as we need them)
-        /// note: currently String type is for fixed size string only
+        /// note: currently string type is for fixed size string only
         ///       a variable size string is tricky and we may never implement it for csv
         enum types_enum { char_t, int8, uint8, int16, uint16, int32, uint32, int64, uint64, float_t, double_t, time, long_time, fixed_string };
 

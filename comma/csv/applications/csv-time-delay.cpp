@@ -18,12 +18,12 @@
 
 #include <iostream>
 #include <string>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Types.h>
-#include <comma/csv/Stream.h>
-#include <comma/NameValue/Parser.h>
-#include <comma/String/String.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/types.h>
+#include <comma/csv/stream.h>
+#include <comma/name_value/parser.h>
+#include <comma/string/string.h>
 #include <comma/visiting/traits.h>
 
 static void usage()
@@ -71,10 +71,10 @@ int main( int ac, char** av )
         seconds *= sign;
         microseconds *= sign;
         boost::posix_time::time_duration delay = boost::posix_time::seconds( seconds ) + boost::posix_time::microseconds( microseconds );
-        comma::csv::Options csv( options );
+        comma::csv::options csv( options );
         comma::csv::input_stream< Point > istream( std::cin, csv );
         comma::csv::output_stream< Point > ostream( std::cout, csv );
-        comma::SignalFlag is_shutdown;
+        comma::signal_flag is_shutdown;
         while( !is_shutdown && std::cin.good() && !std::cin.eof() )
         {
             const Point* p = istream.read();

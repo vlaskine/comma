@@ -25,9 +25,9 @@
 #include <iostream>
 #include <string>
 #include <boost/optional.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/Base/Types.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/types.h>
 #include <comma/csv/format.h>
 
 static void usage()
@@ -66,7 +66,7 @@ int main( int ac, char** av )
         }
         #endif
 
-        comma::SignalFlag is_shutdown;
+        comma::signal_flag is_shutdown;
         if( binary )
         {
             boost::array< char, 65536 > buf;

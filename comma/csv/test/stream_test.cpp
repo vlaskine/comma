@@ -71,7 +71,7 @@ TEST( csv, stream )
 //	}
 //	std::istringstream iss( istring );
 //	std::ostringstream oss;
-//	comma::csv::Options csv;
+//	comma::csv::options csv;
 //	csv.format( "%ui%ui" );
 //	EXPECT_TRUE( csv.binary() );
 //	comma::csv::input_stream< test_struct > istream( iss, csv );

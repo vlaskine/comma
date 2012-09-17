@@ -50,7 +50,7 @@ struct multi_handler : public dispatch::handler_of< alpha >
     void handle( const beta& ) { invoke( "d: got const b" ); }
 };
 
-static void TestDispatch()
+TEST( dispatch, test_basics )
 {
     alpha a;
     beta b;

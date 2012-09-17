@@ -21,11 +21,11 @@
 #include <string>
 #include <vector>
 #include <boost/lexical_cast.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Base/Exception.h>
-#include <comma/Base/Types.h>
-#include <comma/String/String.h>
-#include <comma/Timing/time.h>
+#include <comma/application/command_line_options.h>
+#include <comma/base/exception.h>
+#include <comma/base/types.h>
+#include <comma/string/string.h>
+#include <comma/csv/impl/epoch.h>
 
 static void usage()
 {
@@ -80,7 +80,7 @@ int main( int ac, char** av )
                     {
                         case 1:
                         {
-                            t = boost::posix_time::ptime( comma::Timing::epoch, boost::posix_time::seconds(boost::lexical_cast< long >( w[0] ) ) );
+                            t = boost::posix_time::ptime( comma::csv::impl::epoch, boost::posix_time::seconds(boost::lexical_cast< long >( w[0] ) ) );
                             break;
                         }
                         case 2:
@@ -89,7 +89,7 @@ int main( int ac, char** av )
                             std::string n = "000000000";
                             ::memcpy( &n[0], &w[1][0], w[1].length() ); 
                             comma::uint32 nanoseconds = boost::lexical_cast< comma::uint32 >( n );
-                            t = boost::posix_time::ptime(comma::Timing::epoch, boost::posix_time::seconds( boost::lexical_cast< long >( w[0] ) ) + boost::posix_time::microseconds(nanoseconds/1000));
+                            t = boost::posix_time::ptime(comma::csv::impl::epoch, boost::posix_time::seconds( boost::lexical_cast< long >( w[0] ) ) + boost::posix_time::microseconds(nanoseconds/1000));
                             break;
                         }
                         default:
@@ -102,8 +102,8 @@ int main( int ac, char** av )
             {
                 for( unsigned int i = 0; i < indices.size(); ++i )
                 {
-                    boost::posix_time::ptime t = boost::posix_time::frois_o_string( v[ indices[i] ] );
-                    const boost::posix_time::ptime base( comma::Timing::epoch );
+                    boost::posix_time::ptime t = boost::posix_time::from_iso_string( v[ indices[i] ] );
+                    const boost::posix_time::ptime base( comma::csv::impl::epoch );
                     const boost::posix_time::time_duration posix = t - base;
                     comma::uint64 seconds = posix.total_seconds();
                     comma::uint32 nanoseconds = static_cast< unsigned int >( posix.total_microseconds() % 1000000 ) * 1000;
