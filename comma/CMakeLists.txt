@@ -69,17 +69,16 @@ OPTION(BUILD_TESTS "Build unit tests." OFF)
 SET(comma_BUILD_TESTS ${BUILD_TESTS})
 
 IF( WIN32 )
-OPTION(BUILD_SHARED_LIBS "Build with shared libraries." OFF)
+OPTION(BUILD_SHARED_LIBS "build with shared libraries" OFF)
 ELSE( WIN32 )
-OPTION(BUILD_SHARED_LIBS "Build with shared libraries." ON)
+OPTION(BUILD_SHARED_LIBS "build with shared libraries" ON)
 ENDIF( WIN32 )
 SET(comma_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 IF( NOT BUILD_SHARED_LIBS )
     SET( Boost_USE_STATIC_LIBS ON )
 ENDIF( NOT BUILD_SHARED_LIBS )
-#FIND_PACKAGE( Boost COMPONENTS thread filesystem system date_time )
-FIND_PACKAGE( Boost COMPONENTS filesystem system date_time )
+FIND_PACKAGE( Boost COMPONENTS thread filesystem system date_time )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${Boost_LIBRARY_DIRS} )
 
@@ -92,6 +91,12 @@ IF( comma_BUILD_TESTS )
     SET( GTEST_BOTH_LIBRARIES gtest gtest_main )
 ENDIF( comma_BUILD_TESTS )
 
+OPTION( BUILD_ZEROMQ "build io with zeromq support" OFF )
+IF( BUILD_ZEROMQ )
+    SET( ZeroMQ_LIBRARY "zmq" )
+    ADD_DEFINITIONS( -DUSE_ZEROMQ )
+ENDIF( BUILD_ZEROMQ )
+
 SET( comma_ALL_LIBRARIES 
         debug comma_application-d
         optimized comma_application
@@ -99,6 +104,8 @@ SET( comma_ALL_LIBRARIES
         optimized comma_base
         debug comma_csv-d
         optimized comma_csv
+        debug comma_io-d
+        optimized comma_io
         debug comma_string-d
         optimized comma_string
         debug comma_xpath-d
@@ -116,6 +123,10 @@ SET( comma_ALL_EXTERNAL_LIBRARIES ${comma_ALL_EXTERNAL_LIBRARIES} ${Boost_LIBRAR
 SET( comma_ALL_EXTERNAL_LIBRARIES ${comma_ALL_EXTERNAL_LIBRARIES} )
 SET( comma_ALL_LIBRARIES ${comma_ALL_LIBRARIES} ${comma_ALL_LIBRARIES} ${comma_ALL_EXTERNAL_LIBRARIES} ) # as gcc parses library list only once
 SET( comma_EXTERNAL_INCLUDES ${Boost_INCLUDE_DIRS} )
+
+IF( BUILD_ZEROMQ )
+    SET( comma_ALL_EXTERNAL_LIBRARIES ${comma_ALL_EXTERNAL_LIBRARIES} ${ZeroMQ_LIBRARY} )
+ENDIF( BUILD_ZEROMQ )
 
 ADD_CUSTOM_TARGET( uninstall
     COMMAND ${CMAKE_COMMAND} -D CMAKE_INSTALL_MANIFEST="${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt" -P ${CMAKE_CURRENT_SOURCE_DIR}/CMakeFiles/cmake_uninstall.cmake )
@@ -138,6 +149,7 @@ ADD_SUBDIRECTORY( application )
 ADD_SUBDIRECTORY( base )
 ADD_SUBDIRECTORY( csv )
 ADD_SUBDIRECTORY( dispatch )
+ADD_SUBDIRECTORY( io )
 ADD_SUBDIRECTORY( name_value )
 ADD_SUBDIRECTORY( packed )
 ADD_SUBDIRECTORY( string )

@@ -24,7 +24,7 @@
 #include <comma/csv/options.h>
 #include <comma/csv/stream.h>
 #include <comma/io/publisher.h>
-#include "./play."
+#include "./play.h"
 
 namespace comma {
 
@@ -35,8 +35,8 @@ class Multiplay
         struct time
         {
             time() {}
-            time( boost::posix_time::ptime t ) : time( t ) {}
-            boost::posix_time::ptime time;
+            time( boost::posix_time::ptime t ) : timestamp( t ) {}
+            boost::posix_time::ptime timestamp;
         };
 
         struct SourceConfig
@@ -67,10 +67,10 @@ class Multiplay
 
     private:
         std::vector<SourceConfig> m_configs;
-        std::vector< boost::shared_ptr< comma::Io::IStream > > is_treams;
+        std::vector< boost::shared_ptr< comma::io::istream > > istreams_;
         std::vector< boost::shared_ptr< csv::input_stream< time > > > m_inputStreams;
-        std::vector< boost::shared_ptr< comma::Io::Publisher > > m_publishers;
-        Timing::Play m_play;
+        std::vector< boost::shared_ptr< comma::io::publisher > > m_publishers;
+        csv::impl::play m_play;
         std::vector< boost::posix_time::ptime > m_timestamps;
         bool m_started;
         boost::posix_time::ptime m_from;
@@ -90,13 +90,13 @@ template <> struct traits< comma::Multiplay::time >
     template < typename Key, class Visitor >
     static void visit( Key, comma::Multiplay::time& t, Visitor& v )
     {
-        v.apply( "t", t.time );
+        v.apply( "t", t.timestamp );
     }
 
     template < typename Key, class Visitor >
     static void visit( Key, const comma::Multiplay::time& t, Visitor& v )
     {
-        v.apply( "t", t.time );
+        v.apply( "t", t.timestamp );
     }
 };
 

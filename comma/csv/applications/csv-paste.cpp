@@ -25,7 +25,7 @@
 #include <comma/application/command_line_options.h>
 #include <comma/base/exception.h>
 #include <comma/csv/format.h>
-#include <comma/Io/Stream.h>
+#include <comma/io/stream.h>
 #include <comma/name_value/parser.h>
 #include <comma/string/string.h>
 
@@ -61,18 +61,18 @@ static void usage()
     exit( -1 );
 }
 
-class Source
+class source
 {
     public:
-        Source( const std::string& properties = "" ) : properties_( properties )
+        source( const std::string& properties = "" ) : properties_( properties )
         {
-            comma::NameValue::Map map( properties, ';', '=' );
+            comma::name_value::map map( properties, ';', '=' );
             format_ = comma::csv::format( map.value< std::string >( "binary", "" ) );
             unsigned int size = map.value< unsigned int >( "size", format_.size() );
             binary_ = size > 0;
             value_ = std::string( size, 0 );
         }
-        virtual ~Source() {}
+        virtual ~source() {}
         virtual const std::string* read() = 0;
         virtual const char* read( char* buf ) = 0;
         bool binary() const { return binary_; }
@@ -86,12 +86,12 @@ class Source
         std::string properties_;
 };
 
-class Stream : public Source
+class Stream : public source
 {
     public:
         Stream( const std::string& properties )
-            : Source( properties )
-			, stream_( comma::split( properties, ';' )[0], binary() ? comma::Io::Mode::binary : comma::Io::Mode::ascii )
+            : source( properties )
+            , stream_( comma::split( properties, ';' )[0], binary() ? comma::io::mode::binary : comma::io::mode::ascii )
         {
         }
         
@@ -113,14 +113,14 @@ class Stream : public Source
         }
         
     private:
-        comma::Io::IStream stream_;
+        comma::io::istream stream_;
 };
 
-struct Value : public Source
+struct value : public source
 {
-    Value( const std::string& properties ) : Source( properties )
+    value( const std::string& properties ) : source( properties )
     {
-        comma::NameValue::Map map( properties, ';', '=' );
+        comma::name_value::map map( properties, ';', '=' );
         std::string value = map.value< std::string >( "value" );
         char delimiter = map.value( "delimiter", ',' );
         value_ = binary_ ? format_.csv_to_bin( value, delimiter ) : value;
@@ -138,11 +138,11 @@ int main( int ac, char** av )
         if( options.exists( "--help,-h" ) ) { usage(); }
         char delimiter = options.value( "--delimiter,-d", ',' );
         std::vector< std::string > unnamed = options.unnamed( "", "--delimiter,-d" );
-        boost::ptr_vector< Source > sources;
-        Source* source;
+        boost::ptr_vector< source > sources;
+        source* source;
         for( unsigned int i = 0; i < unnamed.size(); ++i )
         {
-            if( unnamed[i].substr( 0, 6 ) == "value=" ) { source = new Value( unnamed[i] ); }
+            if( unnamed[i].substr( 0, 6 ) == "value=" ) { source = new value( unnamed[i] ); }
             else { source = new Stream( unnamed[i] ); }
             if( i > 0 && sources.back().binary() != source->binary() ) { std::cerr << "csv-paste: one input is ascii, the other binary: " << sources.back().properties() << " vs " << source->properties() << std::endl; usage(); }
             sources.push_back( source );

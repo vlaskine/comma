@@ -26,10 +26,10 @@
 #include <comma/application/command_line_options.h>
 #include <comma/application/signal_flag.h>
 #include <comma/csv/options.h>
-#include <comma/csv/Stream.h>
-#include <comma/NameValue/Parser.h>
-#include <comma/Timing/Play.h>
-#include <comma/csv/applications/Play/Multiplay.h>
+#include <comma/csv/stream.h>
+#include <comma/name_value/parser.h>
+#include <comma/csv/applications/play/play.h>
+#include <comma/csv/applications/play/multiplay.h>
 
 static void usage()
 {
@@ -86,11 +86,11 @@ int main( int argc, char** argv )
     boost::scoped_ptr< comma::Multiplay > multiPlay;
     try
     {
-        const boost::array< comma::signal_flag::Signals, 2 > signals = { { comma::signal_flag::sigint, comma::signal_flag::sigterm } };
+        const boost::array< comma::signal_flag::signals, 2 > signals = { { comma::signal_flag::sigint, comma::signal_flag::sigterm } };
         comma::signal_flag shutdownFlag( signals );
         comma::command_line_options options( argc, argv );
         if( options.exists( "--help,-h" ) ) { usage(); }
-        options.assertMutuallyExclusive( "--speed,--slow,--slowdown" );
+        options.assert_mutually_exclusive( "--speed,--slow,--slowdown" );
         double speed = options.value( "--speed", 1.0 / options.value< double >( "--slow,--slowdown", 1.0 ) );
         unsigned int precision = options.value( "--precision", 10u );
         std::string from = options.value< std::string>( "--from", "" );
@@ -100,7 +100,7 @@ int main( int argc, char** argv )
         std::vector< std::string > configstrings = options.unnamed("--quiet,--no-flush","--slow,--slowdown,--speed,--precision,--binary,--fields,--clients,--from,--to");
         if( configstrings.empty() ) { configstrings.push_back( "-;-" ); }
         comma::csv::options csvoptions( argc, argv );
-        comma::NameValue::Parser nameValue("filename,output", ';', '=', false );
+        comma::name_value::parser nameValue("filename,output", ';', '=', false );
         std::vector< comma::Multiplay::SourceConfig > sourceConfigs( configstrings.size() );
         comma::Multiplay::SourceConfig defaultConfig( "-", options.value( "--clients", 0 ), csvoptions );
         for( unsigned int i = 0U; i < configstrings.size(); ++i )

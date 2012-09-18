@@ -8,8 +8,7 @@ SOURCE_GROUP( ${PROJECT} FILES ${source} ${includes} ${impl_includes} )
 ADD_CUSTOM_TARGET( ${TARGET_NAME} ${source} ${includes} ${impl_includes} )
 
 INSTALL( FILES ${includes} DESTINATION ${CMAKE_INSTALL_PREFIX}/${comma_INSTALL_INCLUDE_DIR}/${PROJECT} )
-INSTALL( FILES ${impl_includes} DESTINATION ${CMAKE_INSTALL_PREFIX}/${comma_INSTALL_INCLUDE_DIR}/${PROJECT}/Impl )
-
+INSTALL( FILES ${impl_includes} DESTINATION ${CMAKE_INSTALL_PREFIX}/${comma_INSTALL_INCLUDE_DIR}/${PROJECT}/impl )
 IF( comma_BUILD_TESTS )
     ADD_SUBDIRECTORY( test )
 ENDIF( comma_BUILD_TESTS )

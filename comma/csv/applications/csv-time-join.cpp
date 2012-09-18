@@ -22,9 +22,9 @@
 #include <comma/application/command_line_options.h>
 #include <comma/application/signal_flag.h>
 #include <comma/base/types.h>
-#include <comma/csv/Stream.h>
-#include <comma/Io/Stream.h>
-#include <comma/NameValue/Parser.h>
+#include <comma/csv/stream.h>
+#include <comma/io/stream.h>
+#include <comma/name_value/parser.h>
 #include <comma/string/string.h>
 #include <comma/visiting/traits.h>
 
@@ -98,7 +98,7 @@ int main( int ac, char** av )
     {
         comma::command_line_options options( ac, av );
         if( options.exists( "--help" ) || options.exists( "-h" ) || ac == 1 ) { usage(); }
-        options.assertMutuallyExclusive( "--by-lower,--by-upper,--nearest" );
+        options.assert_mutually_exclusive( "--by-lower,--by-upper,--nearest" );
         bool by_upper = options.exists( "--by-upper" );
         bool nearest = options.exists( "--nearest" );
         bool by_lower = ( options.exists( "--by-lower" ) || !by_upper ) && !nearest;
@@ -111,8 +111,8 @@ int main( int ac, char** av )
         //bool has_block = stdin_csv.has_field( "block" );
         comma::csv::input_stream< Point > stdin_stream( std::cin, stdin_csv );
         std::string properties = options.unnamed( "--by-lower,--by-upper,--nearest,--timestamp-only,--time-only,--no-discard", "--binary,-b,--delimiter,-d,--fields,-f,--bound" )[0];
-        comma::Io::IStream is( comma::split( properties, ';' )[0] );
-        comma::NameValue::Parser parser( "filename" );
+        comma::io::istream is( comma::split( properties, ';' )[0] );
+        comma::name_value::parser parser( "filename" );
         comma::csv::options csv = parser.get< comma::csv::options >( properties );
         if( csv.fields.empty() ) { csv.fields = "t"; }
         comma::csv::input_stream< Point > istream( *is, csv );

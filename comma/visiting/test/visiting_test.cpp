@@ -15,56 +15,18 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with comma. If not, see <http://www.gnu.org/licenses/>.
 
+#include <gtest/gtest.h>
 #include <sstream>
 #include <string>
 #include <map>
 #include <set>
 #include <vector>
 #include <boost/noncopyable.hpp>
-#include "comma/eigen/visiting.h"
-#include "comma/visiting/apply.h"
-#include "comma/visiting/visit.h"
-#include <gtest/gtest.h>
+#include <comma/visiting/apply.h>
+#include <comma/visiting/visit.h>
 
 namespace comma { namespace visiting { namespace test {
 
-template< typename T >
-struct position
-{
-    typedef Eigen::Matrix< T, 3, 1 > vector;
-    
-    position( const vector& c, const vector& o ) : coordinates( c ), orientation( o ) {}
-    vector coordinates;
-    vector orientation;
-};
-
-} } }
-
-namespace comma { namespace visiting {
-
-template < typename T >
-struct traits< test::position< T > >
-{
-    template < typename Key, typename visitor >
-    static void visit( const Key&, const test::position< T >& p, visitor& v )
-    {
-        v.apply( "coordinates", p.coordinates );
-        v.apply( "orientation", p.orientation );;
-    }
-
-    template < typename Key, typename visitor >
-    static void visit( const Key&, test::position< T >& p, visitor& v )
-    {
-        v.apply( "coordinates", p.coordinates );
-        v.apply( "orientation", p.orientation );;
-    }
-};
-
-
-} } // namespace comma { namespace visiting {
-
-namespace comma { namespace visiting { namespace test {
-    
 /// visitor that outputs a struct in a text format
 class o_stream_visitor : public boost::noncopyable
 {
@@ -118,26 +80,6 @@ class multiply : public boost::noncopyable
     private:
         int m_value;
 };
-
-
-TEST( visiting, constvisit )
-{
-    position< float > p( Eigen::Vector3f( 1, 2, 3 ), Eigen::Vector3f( 0, 0, 0 ) );
-    std::ostringstream oss;
-    o_stream_visitor v( oss );
-    visiting::apply( v, p );
-    EXPECT_EQ( oss.str(), "{ object:coordinates={ float:x=1 float:y=2 float:z=3 } object:orientation={ float:x=0 float:y=0 float:z=0 } }" );
-}
-
-TEST( visiting, visit )
-{
-    position< int > p( Eigen::Vector3i( 1, 2, 3 ), Eigen::Vector3i( 1, 0, 0 ) );
-    multiply v( 2 );
-    visiting::apply( v, p );
-    position< int > q( Eigen::Vector3i( 2, 4, 6 ), Eigen::Vector3i( 2, 0, 0 ) );
-    EXPECT_EQ( p.coordinates, q.coordinates );
-    EXPECT_EQ( p.orientation, q.orientation );
-}
 
 struct old_plain
 {

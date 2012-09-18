@@ -36,7 +36,7 @@ Multiplay::Multiplay( const std::vector< SourceConfig >& configs
                     , boost::posix_time::ptime to
                     , bool flush )
     : m_configs( configs )
-    , is_treams( configs.size() )
+    , istreams_( configs.size() )
     , m_inputStreams( configs.size() )
     , m_publishers( configs.size() )
     , m_play( speed, quiet, precision )
@@ -50,12 +50,12 @@ Multiplay::Multiplay( const std::vector< SourceConfig >& configs
     for( unsigned int i = 0; i < configs.size(); i++ )
     {
         // todo: quick and dirty for now: blocking streams for named pipes
-        is_treams[i].reset( new Io::IStream( configs[i].options.filename, m_configs[i].options.binary() ? Io::Mode::binary : Io::Mode::ascii, Io::Mode::blocking ) );
-        if( !( *is_treams[i] )() ) { COMMA_THROW( comma::exception, "named pipe " << configs[i].options.filename << " is closed (todo: support closed named pipes)" ); }
-        m_inputStreams[i].reset( new csv::input_stream< time >( *( *is_treams[i] )(), m_configs[i].options ) );
+        istreams_[i].reset( new io::istream( configs[i].options.filename, m_configs[i].options.binary() ? io::mode::binary : io::mode::ascii, io::mode::blocking ) );
+        if( !( *istreams_[i] )() ) { COMMA_THROW( comma::exception, "named pipe " << configs[i].options.filename << " is closed (todo: support closed named pipes)" ); }
+        m_inputStreams[i].reset( new csv::input_stream< time >( *( *istreams_[i] )(), m_configs[i].options ) );
         unsigned int j;
         for( j = 0; j < i && configs[j].outputFileName != configs[i].outputFileName; ++j ); // quick and dirty: unique publishers
-        if( j == i ) { m_publishers[i].reset( new Io::Publisher( configs[i].outputFileName, m_configs[i].options.binary() ? Io::Mode::binary : Io::Mode::ascii, true, flush ) ); }
+        if( j == i ) { m_publishers[i].reset( new io::publisher( configs[i].outputFileName, m_configs[i].options.binary() ? io::mode::binary : io::mode::ascii, true, flush ) ); }
         else { m_publishers[i] = m_publishers[j]; }
         boost::posix_time::time_duration d;
         if( configs[i].offset.total_microseconds() != 0 )
@@ -77,7 +77,7 @@ void Multiplay::close()
 {
     for( unsigned int i = 0U; i < m_configs.size(); i++ )
     {
-        is_treams[i]->close();
+        istreams_[i]->close();
         m_publishers[i]->close();
     }
 }
@@ -93,7 +93,7 @@ static std::string endl()
 
 } // namespace impl {
 
-bool Multiplay::ready() // quick and dirty; should not it be in Io::Publisher?
+bool Multiplay::ready() // quick and dirty; should not it be in io::Publisher?
 {
     if( m_started ) { return true; }
     for( unsigned int i = 0; i < m_configs.size(); ++i )
@@ -122,7 +122,7 @@ bool Multiplay::read()
         if( !m_timestamps[i].is_not_a_date_time() ) { end = false; continue; }
         const time* time = m_inputStreams[i]->read();
         if( time == NULL ) { continue; }
-        boost::posix_time::ptime t = time->time;
+        boost::posix_time::ptime t = time->timestamp;
         if( m_configs[i].offset.total_microseconds() != 0 )
         {
             t += m_configs[i].offset;
