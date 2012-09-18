@@ -1,6 +1,7 @@
-// This file is part of comma, a generic and flexible library
+// This file is part of comma, a generic and flexible library 
+// for robotics research.
 //
-// Copyright (C) 2011 Vsevolod Vlaskine and Cedric Wohlleber
+// Copyright (C) 2011 The University of Sydney
 //
 // comma is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -9,7 +10,7 @@
 //
 // comma is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License 
 // for more details.
 //
 // You should have received a copy of the GNU Lesser General Public
@@ -62,7 +63,7 @@ namespace Impl {
 template < typename K, typename V, typename Visitor >
 inline void visit_non_associative_container( const K&, const V& c, Visitor& v )
 {
-	std::size_t index = 0;
+    std::size_t index = 0;
     for( typename V::const_iterator it = c.begin(); it != c.end(); ++it, ++index )
     {
         v.apply( index, *it );
@@ -79,12 +80,24 @@ inline void visit_non_associative_container( const K&, V& c, Visitor& v )
     }
 }
 
+template < typename T, typename Visitor >
+inline void visit_associative_container_key( const std::string& k, T& t, Visitor& v ) { v.apply( &k[0], t ); }
+
+template < typename T, typename Visitor >
+inline void visit_associative_container_key( const std::string& k, const T& t, Visitor& v ) { v.apply( &k[0], t ); }
+
+template < typename K, typename T, typename Visitor >
+inline void visit_associative_container_key( const K& k, T& t, Visitor& v ) { v.apply( k, t ); }
+
+template < typename K, typename T, typename Visitor >
+inline void visit_associative_container_key( const K& k, const T& t, Visitor& v ) { v.apply( k, t ); }
+
 template < typename K, typename M, typename Visitor >
 inline void visit_associative_container( const K&, M& c, Visitor& v )
 {
     for( typename M::iterator it = c.begin(); it != c.end(); ++it )
     {
-        v.apply( it->first.c_str(), it->second ); // quick and dirty: get rid of c_str()
+        visit_associative_container_key( it->first, it->second, v );
     }
 }
 
@@ -93,7 +106,7 @@ inline void visit_associative_container( const K&, const M& c, Visitor& v )
 {
     for( typename M::const_iterator it = c.begin(); it != c.end(); ++it )
     {
-        v.apply( it->first.c_str(), it->second ); // quick and dirty: get rid of c_str()
+        visit_associative_container_key( it->first, it->second, v );
     }
 }
 
