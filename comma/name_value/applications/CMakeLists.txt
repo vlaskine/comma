@@ -1,15 +1,13 @@
-SET( dir ${SOURCE_CODE_BASE_DIR}/Serialization/Applications )
+SET( dir ${SOURCE_CODE_BASE_DIR}/name_value/applications )
 FILE( GLOB source   ${dir}/*.cpp)
 FILE( GLOB includes ${dir}/*.h)
 SOURCE_GROUP( ${TARGET_NAME} FILES ${source} ${includes} )
-ADD_EXECUTABLE( config-convert ${dir}/config-convert.cpp )
-ADD_EXECUTABLE( config-get ${dir}/config-get.cpp )
-ADD_EXECUTABLE( config-set ${dir}/config-set.cpp )
+ADD_EXECUTABLE( name-value-convert ${dir}/name-value-convert.cpp )
+ADD_EXECUTABLE( name-value-get ${dir}/name-value-get.cpp )
 
-TARGET_LINK_LIBRARIES ( config-convert ${Ark_EXTERNAL_ALL_LIBRARIES} ArkApplication ArkString ArkXPath )
-TARGET_LINK_LIBRARIES ( config-get ${Ark_EXTERNAL_ALL_LIBRARIES} ArkApplication ArkString ArkXPath )
-TARGET_LINK_LIBRARIES ( config-set ${Ark_EXTERNAL_ALL_LIBRARIES} ArkApplication ArkString ArkXPath )
+TARGET_LINK_LIBRARIES ( name-value-convert ${comma_EXTERNAL_ALL_LIBRARIES} comma_application comma_string comma_xpath )
+TARGET_LINK_LIBRARIES ( name-value-get ${comma_EXTERNAL_ALL_LIBRARIES} comma_application comma_string comma_xpath )
 
-INSTALL( TARGETS config-convert config-get config-set
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${Ark_INSTALL_BIN_DIR}
+INSTALL( TARGETS name-value-convert name-value-get
+         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${comma_INSTALL_BIN_DIR}
          COMPONENT Runtime )

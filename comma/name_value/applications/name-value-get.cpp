@@ -5,11 +5,11 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <Ark/Base/Exception.h>
-#include <Ark/Application/CommandLineOptions.h>
-#include <Ark/Application/SignalFlag.h>
-#include <Ark/Serialization/PTree.h>
-#include <Ark/XPath/XPath.h>
+#include <comma/base/exception.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/name_value/ptree.h>
+#include <comma/xpath/xpath.h>
 
 static void usage()
 {
@@ -17,7 +17,7 @@ static void usage()
     std::cerr << "take a stream of name-value style input on stdin," << std::endl;
     std::cerr << "output value at given path on stdout" << std::cerr;
     std::cerr << std::endl;
-    std::cerr << "usage: cat data.xml | config-set <path=value> [<options>]" << std::endl;
+    std::cerr << "usage: cat data.xml | name-value-get <paths> [<options>]" << std::endl;
     std::cerr << std::endl;
     std::cerr << "<path>: x-path, e.g. \"command/type\"" << std::endl;
     std::cerr << std::endl;
@@ -42,99 +42,93 @@ static void usage()
     exit( 1 );
 }
 
-static char equalSign;
+static char equal_sign;
 static char delimiter;
 static bool linewise;
 
-enum Types { ini, info, json, xml, nameValue };
+enum Types { ini, info, json, xml, name_value_tag };
 
-template < Types Type > struct Traits {};
+template < Types Type > struct traits {};
 
-template <> struct Traits< ini >
+template <> struct traits< ini >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_ini( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_ini( os, ptree ); }
 };
 
-template <> struct Traits< info >
+template <> struct traits< info >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_info( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_info( os, ptree ); }
 };
 
-template <> struct Traits< json >
+template <> struct traits< json >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_json( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_json( os, ptree ); }
 };
 
-template <> struct Traits< xml >
+template <> struct traits< xml >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_xml( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_xml( os, ptree ); }
 };
 
-template <> struct Traits< nameValue >
+template <> struct traits< name_value_tag >
 {
     // todo: handle indented input (quick and dirty: use exceptions)
-    static void input( std::istream& is, boost::property_tree::ptree& ptree ) { Ark::PropertyTree::fromNameValue( is, ptree, equalSign, delimiter ); }
-    static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { Ark::PropertyTree::toNameValue( os, ptree, !linewise, equalSign, delimiter ); }
+    static void input( std::istream& is, boost::property_tree::ptree& ptree ) { comma::property_tree::from_name_value( is, ptree, equal_sign, delimiter ); }
+    static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { comma::property_tree::to_name_value( os, ptree, !linewise, equal_sign, delimiter ); }
 };
 
 int main( int ac, char** av )
 {
     try
     {
-        Ark::CommandLineOptions options( ac, av );
+        comma::command_line_options options( ac, av );
         if( options.exists( "--help,-h" ) ) { usage(); }
-        options.assertMutuallyExclusive( "--info,--ini,--json,--name-value,--xml" );
-        equalSign = options.value( "--equal-sign,-e", '=' );
+        options.assert_mutually_exclusive( "--info,--ini,--json,--name-value,--xml" );
+        std::vector< std::string > unnamed = options.unnamed( "--linewise,-l", "--from,--equal-sign,-e,--delimiter,-d" );
+        if( unnamed.empty() ) { std::cerr << std::endl << "name-value-get: xpath missing" << std::endl; usage(); }
+        std::vector< boost::property_tree::ptree::path_type > paths;
+        for( std::size_t i = 0; i < unnamed.size(); ++i )
+        {
+            if( unnamed[i].find( '.' ) != std::string::npos ) { std::cerr << "name-value-get: got " << unnamed[i] << ", but paths containing '.' not supported (todo)" << std::endl; exit( 1 ); }
+            comma::xpath xpath( unnamed[i], '/' );
+            paths.push_back( xpath.to_string( '.' ) );
+        }
+        equal_sign = options.value( "--equal-sign,-e", '=' );
         delimiter = options.value( "--delimiter,-d", ',' );
         linewise = options.exists( "--linewise,-l" );
         void ( * input )( std::istream& is, boost::property_tree::ptree& ptree );
         void ( * output )( std::ostream& is, boost::property_tree::ptree& ptree );
         std::string from = options.value< std::string >( "--from", "name-value" );
-        if( from == "ini" ) { input = &Traits< ini >::input; output = &Traits< ini >::output; }
-        else if( from == "info" ) { input = &Traits< info >::input; output = &Traits< info >::output; }
-        else if( from == "json" ) { input = &Traits< json >::input; output = &Traits< json >::output; }
-        else if( from == "xml" ) { input = &Traits< xml >::input; output = &Traits< xml >::output; }
-        else { input = &Traits< nameValue >::input; output = &Traits< nameValue >::output; }
-        std::vector< std::string > unnamed = options.unnamed( "--linewise,-l", "--from,--equal-sign,-e,--delimiter,-d" );
-        if( unnamed.empty() ) { std::cerr << std::endl << "config-set: xpath missing" << std::endl; usage(); }
-        std::vector< boost::property_tree::ptree::path_type > paths( unnamed.size() );
-        std::vector< std::string > values( unnamed.size() );
-        std::vector< boost::property_tree::ptree > trees( unnamed.size() );
-        std::deque< bool > is_tree( unnamed.size() );
-        for( std::size_t i = 0; i < unnamed.size(); ++i )
-        {
-            std::vector< std::string > v = Ark::split( unnamed[i], '=' );
-            if( v.size() < 2 ) { ARK_THROW_STREAM( Ark::Exception, "expected path=value, got " << unnamed[i] ); }
-            values[i] = Ark::join( v.begin() + 1, v.end(), '=' );
-            std::istringstream iss( values[i] );
-            input( iss, trees[i] );
-            is_tree[i] = trees[i].find( values[i] ) == trees[i].not_found();
-            Ark::XPath xpath( v[0], '/' );
-            paths[i] = xpath.toString( '.' );
-        }
+        if( from == "ini" ) { input = &traits< ini >::input; output = &traits< ini >::output; }
+        else if( from == "info" ) { input = &traits< info >::input; output = &traits< info >::output; }
+        else if( from == "json" ) { input = &traits< json >::input; output = &traits< json >::output; }
+        else if( from == "xml" ) { input = &traits< xml >::input; output = &traits< xml >::output; }
+        else { input = &traits< name_value_tag >::input; output = &traits< name_value_tag >::output; }
         if( linewise )
         {
-            Ark::SignalFlag isShutdown;
+            comma::signal_flag is_shutdown;
             while( std::cout.good() )
             {
                 std::string line;
                 std::getline( std::cin, line );
-                if( isShutdown || !std::cin.good() || std::cin.eof() ) { break; }
+                if( is_shutdown || !std::cin.good() || std::cin.eof() ) { break; }
                 std::istringstream iss( line );
                 boost::property_tree::ptree ptree;
                 input( iss, ptree );
+                std::ostringstream oss;
                 static const boost::property_tree::ptree::path_type empty;
                 for( std::size_t i = 0; i < paths.size(); ++i )
                 {
-                    if( is_tree[i] ) { ptree.put_child( paths[i], trees[i] ); }
-                    else { ptree.put( paths[i], values[i] ); }
+                    boost::optional< boost::property_tree::ptree& > child = ptree.get_child_optional( paths[i] );
+                    if( !child ) { continue; }
+                    boost::optional< std::string > value = child->get_optional< std::string >( empty );
+                    if( value && !value->empty() ) { oss << *value << std::endl; }
+                    else { output( oss, *child ); }
                 }
-                std::ostringstream oss;
-                output( oss, ptree );
                 std::string s = oss.str();
                 if( s.empty() ) { continue; }
                 bool escaped = false;
@@ -158,21 +152,24 @@ int main( int ac, char** av )
         {
             boost::property_tree::ptree ptree;
             input( std::cin, ptree );
+            static const boost::property_tree::ptree::path_type empty;
             for( std::size_t i = 0; i < paths.size(); ++i )
             {
-                if( is_tree[i] ) { ptree.put_child( paths[i], trees[i] ); }
-                else { ptree.put( paths[i], values[i] ); }
-            }            
-            output( std::cout, ptree );
+                boost::optional< boost::property_tree::ptree& > child = ptree.get_child_optional( paths[i] );
+                if( !child ) { continue; }
+                boost::optional< std::string > value = child->get_optional< std::string >( empty );
+                if( value && !value->empty() ) { std::cout << *value << std::endl; }
+                else { output( std::cout, *child ); }
+            }
         }
     }
     catch( std::exception& ex )
     {
-        std::cerr << std::endl << "config-set: " << ex.what() << std::endl << std::cerr << std::endl;
+        std::cerr << std::endl << "name-value-get: " << ex.what() << std::endl << std::cerr << std::endl;
     }
     catch( ... )
     {
-        std::cerr << std::endl << "config-set: unknown exception" << std::endl << std::endl;
+        std::cerr << std::endl << "name-value-get: unknown exception" << std::endl << std::endl;
     }
     return 1;
 }

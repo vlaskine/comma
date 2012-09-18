@@ -5,11 +5,11 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <Ark/Base/Exception.h>
-#include <Ark/Application/CommandLineOptions.h>
-#include <Ark/Application/SignalFlag.h>
-#include <Ark/Serialization/PTree.h>
-#include <Ark/XPath/XPath.h>
+#include <comma/base/exception.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/name_value/ptree.h>
+#include <comma/xpath/xpath.h>
 
 static void usage()
 {
@@ -17,7 +17,7 @@ static void usage()
     std::cerr << "take a stream of name-value style input on stdin," << std::endl;
     std::cerr << "output value at given path on stdout" << std::cerr;
     std::cerr << std::endl;
-    std::cerr << "usage: cat data.xml | config-convert <from> [<options>]" << std::endl;
+    std::cerr << "usage: cat data.xml | name-value-convert <from> [<options>]" << std::endl;
     std::cerr << std::endl;
     std::cerr << "<path>: x-path, e.g. \"command/type\"" << std::endl;
     std::cerr << std::endl;
@@ -44,46 +44,46 @@ static void usage()
     exit( 1 );
 }
 
-static char equalSign;
+static char equal_sign;
 static char delimiter;
 static bool linewise;
 
 enum Types { ini, info, json, xml, name_value, path_value };
 
-template < Types Type > struct Traits {};
+template < Types Type > struct traits {};
 
-template <> struct Traits< ini >
+template <> struct traits< ini >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_ini( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_ini( os, ptree ); }
 };
 
-template <> struct Traits< info >
+template <> struct traits< info >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_info( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_info( os, ptree ); }
 };
 
-template <> struct Traits< json >
+template <> struct traits< json >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_json( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_json( os, ptree ); }
 };
 
-template <> struct Traits< xml >
+template <> struct traits< xml >
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree ) { boost::property_tree::read_xml( is, ptree ); }
     static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { boost::property_tree::write_xml( os, ptree ); }
 };
 
-template <> struct Traits< name_value >
+template <> struct traits< name_value >
 {
     // todo: handle indented input (quick and dirty: use exceptions)
-    static void input( std::istream& is, boost::property_tree::ptree& ptree ) { Ark::PropertyTree::fromNameValue( is, ptree, equalSign, delimiter ); }
-    static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { Ark::PropertyTree::toNameValue( os, ptree, !linewise, equalSign, delimiter ); }
+    static void input( std::istream& is, boost::property_tree::ptree& ptree ) { comma::property_tree::from_name_value( is, ptree, equal_sign, delimiter ); }
+    static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { comma::property_tree::to_name_value( os, ptree, !linewise, equal_sign, delimiter ); }
 };
 
-template <> struct Traits< path_value > // quick and dirty
+template <> struct traits< path_value > // quick and dirty
 {
     static void input( std::istream& is, boost::property_tree::ptree& ptree )
     {
@@ -103,45 +103,45 @@ template <> struct Traits< path_value > // quick and dirty
                 s += t + delimiter;
             }
         }
-        ptree = Ark::PropertyTree::fromPathValueString( s, equalSign, delimiter );
+        ptree = comma::property_tree::from_path_value_string( s, equal_sign, delimiter );
     }
-    static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { Ark::PropertyTree::toPathValue( os, ptree, equalSign, delimiter ); }
+    static void output( std::ostream& os, boost::property_tree::ptree& ptree ) { comma::property_tree::to_path_value( os, ptree, equal_sign, delimiter ); }
 };
 
 int main( int ac, char** av )
 {
     try
     {
-        Ark::CommandLineOptions options( ac, av );
+        comma::command_line_options options( ac, av );
         if( options.exists( "--help,-h" ) ) { usage(); }
         std::string from = options.value< std::string >( "--from", "name-value" );
         std::string to = options.value< std::string >( "--to", "name-value" );
-        equalSign = options.value( "--equal-sign,-e", '=' );
+        equal_sign = options.value( "--equal-sign,-e", '=' );
         linewise = options.exists( "--linewise,-l" );
         char default_delimiter = ( to == "path-value" || from == "path-value" ) && !linewise ? '\n' : ',';
         delimiter = options.value( "--delimiter,-d", default_delimiter );
         void ( * input )( std::istream& is, boost::property_tree::ptree& ptree );
         void ( * output )( std::ostream& is, boost::property_tree::ptree& ptree );
-        if( from == "ini" ) { input = &Traits< ini >::input; }
-        else if( from == "info" ) { input = &Traits< info >::input; }
-        else if( from == "json" ) { input = &Traits< json >::input; }
-        else if( from == "xml" ) { input = &Traits< xml >::input; }
-        else if( from == "path-value" ) { input = &Traits< path_value >::input; }
-        else { input = &Traits< name_value >::input; }
-        if( to == "ini" ) { output = &Traits< ini >::output; }
-        else if( to == "info" ) { output = &Traits< info >::output; }
-        else if( to == "json" ) { output = &Traits< json >::output; }
-        else if( to == "xml" ) { output = &Traits< xml >::output; }
-        else if( to == "path-value" ) { output = &Traits< path_value >::output; }
-        else { output = &Traits< name_value >::output; }
+        if( from == "ini" ) { input = &traits< ini >::input; }
+        else if( from == "info" ) { input = &traits< info >::input; }
+        else if( from == "json" ) { input = &traits< json >::input; }
+        else if( from == "xml" ) { input = &traits< xml >::input; }
+        else if( from == "path-value" ) { input = &traits< path_value >::input; }
+        else { input = &traits< name_value >::input; }
+        if( to == "ini" ) { output = &traits< ini >::output; }
+        else if( to == "info" ) { output = &traits< info >::output; }
+        else if( to == "json" ) { output = &traits< json >::output; }
+        else if( to == "xml" ) { output = &traits< xml >::output; }
+        else if( to == "path-value" ) { output = &traits< path_value >::output; }
+        else { output = &traits< name_value >::output; }
         if( linewise )
         {
-            Ark::SignalFlag isShutdown;
+            comma::signal_flag is_shutdown;
             while( std::cout.good() )
             {
                 std::string line;
                 std::getline( std::cin, line );
-                if( isShutdown || !std::cin.good() || std::cin.eof() ) { break; }
+                if( is_shutdown || !std::cin.good() || std::cin.eof() ) { break; }
                 std::istringstream iss( line );
                 boost::property_tree::ptree ptree;
                 input( iss, ptree );
@@ -175,11 +175,11 @@ int main( int ac, char** av )
     }
     catch( std::exception& ex )
     {
-        std::cerr << std::endl << "config-convert: " << ex.what() << std::endl << std::cerr << std::endl;
+        std::cerr << std::endl << "name-value-convert: " << ex.what() << std::endl << std::cerr << std::endl;
     }
     catch( ... )
     {
-        std::cerr << std::endl << "config-convert: unknown exception" << std::endl << std::endl;
+        std::cerr << std::endl << "name-value-convert: unknown exception" << std::endl << std::endl;
     }
     return 1;
 }
