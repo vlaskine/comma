@@ -26,9 +26,9 @@
 
 namespace comma {
 namespace io {
-namespace ZeroMQ {
+namespace zeromq {
 
-/// ostream wrapper for ZeroMQ
+/// ostream wrapper for zeromq
 class ostream : public boost::iostreams::sink
 {
 public:

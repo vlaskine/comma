@@ -87,7 +87,7 @@ class exception : public std::runtime_error
 
     protected:
 
-        virtual void    generate_formatted_string();
+        virtual void    formatted_string_();
 
         std::string     m_message;
         std::string     m_filename;
@@ -96,8 +96,72 @@ class exception : public std::runtime_error
         std::string     m_formatted_message;
 };
 
-}  // namespace comma
+inline exception::exception( const char *message, const char *filename, unsigned long line_number, const char *function_name ) :
+    std::runtime_error( message ),
+    m_message( message ),
+    m_filename( filename ),
+    m_line_number( line_number ),
+    m_function_name( function_name )
+{
+    formatted_string_();
+}
 
+inline exception::exception( const std::string& message, const char *filename, unsigned long line_number, const char *function_name ) :
+    std::runtime_error( message.c_str() ),
+    m_message( message ),
+    m_filename( filename ),
+    m_line_number( line_number ),
+    m_function_name( function_name )
+{
+    formatted_string_();
+}
+
+inline const char* exception::what(void) const throw()
+{
+    const char * string = "exception::what() m_formatted_message.c_str() threw exception";
+    try
+    {
+      string = m_formatted_message.c_str();
+    }
+    catch( ... )
+    {}
+    return string;
+}
+
+inline const char* exception::error() const
+{
+    return m_message.c_str();
+}
+
+
+inline const char* exception::file() const
+{
+    return m_filename.c_str();
+}
+
+inline unsigned long exception::line() const
+{
+    return m_line_number;
+}
+
+inline const char* exception::function() const
+{
+    return m_function_name.c_str();
+}
+
+inline void exception::formatted_string_()
+{
+    std::ostringstream oss;
+    oss << error() << std::endl
+        << "============================================" << std::endl
+        << "file: "     << m_filename << std::endl
+        << "line: "     << m_line_number << std::endl
+        << "function: " << m_function_name << std::endl
+        << "============================================" << std::endl;
+    m_formatted_message = oss.str();
+}
+
+}  // namespace comma
 
 #endif //COMMA_BASE_EXCEPTION_H
 

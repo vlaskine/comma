@@ -6,8 +6,8 @@
 #include <boost/asio/ip/udp.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/noncopyable.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
 
 void usage()
 {
@@ -52,7 +52,7 @@ int main( int argc, char** argv )
     }
     socket.bind( boost::asio::ip::udp::endpoint( boost::asio::ip::udp::v4(), port ), error );
     if( error ) { std::cerr << "udp-client: failed to bind port " << port << std::endl; return 1; }
-    comma::SignalFlag is_shutdown;
+    comma::signal_flag is_shutdown;
     while( !is_shutdown && std::cout.good() )
     {
         boost::system::error_code error;

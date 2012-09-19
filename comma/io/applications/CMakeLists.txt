@@ -4,7 +4,7 @@ FILE( GLOB includes ${dir}/*.h)
 SOURCE_GROUP( ${TARGET_NAME} FILES ${source} ${includes} )
 
 ADD_EXECUTABLE( io-publish ${dir}/io-publish.cpp ${dir}/publish.h ${dir}/publish.cpp )
-TARGET_LINK_LIBRARIES ( io-publish ${comma_EXTERNAL_ALL_LIBRARIES} comma_Base comma_Io comma_Application ) # profiler )
+TARGET_LINK_LIBRARIES ( io-publish ${comma_EXTERNAL_ALL_LIBRARIES} comma_base comma_io comma_application ) # profiler )
 
 IF( NOT WIN32 )
 ADD_EXECUTABLE( udp-client ${dir}/udp-client.cpp )

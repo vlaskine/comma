@@ -43,8 +43,8 @@ private:
     std::vector< boost::shared_ptr< io::publisher > > publishers_;
     io::select select_;
 
-    boost::scoped_ptr< comma::CyclicBuffer< std::string > > line_buffer_;
-    boost::scoped_ptr< comma::CyclicBuffer< std::vector<char> > > char_buffer_;
+    boost::scoped_ptr< comma::cyclic_buffer< std::string > > line_buffer_;
+    boost::scoped_ptr< comma::cyclic_buffer< std::vector<char> > > char_buffer_;
     std::vector<char> packet_; // for reassembly of packets
     unsigned int packet_offset_; // for reassembly of packets
     unsigned int packet_size_;

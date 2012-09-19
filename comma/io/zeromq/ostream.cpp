@@ -17,11 +17,11 @@
 // License along with comma. If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <comma/io/ZeroMQ/ostream.h>
+#include <comma/io/zeromq/ostream.h>
 
 namespace comma {
 namespace io {
-namespace ZeroMQ {
+namespace zeromq {
     
 ostream::ostream( const std::string& endpoint ):
     m_context( new zmq::context_t( 1 ) ),

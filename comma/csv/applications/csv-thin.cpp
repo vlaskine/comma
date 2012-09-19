@@ -31,6 +31,7 @@
 #include <comma/base/exception.h>
 #include <comma/base/types.h>
 #include <comma/io/file_descriptor.h>
+#include <comma/math/compare.h>
 
 using namespace comma;
 
@@ -63,7 +64,7 @@ bool ignore()
     static boost::mt19937 rng;
     static boost::uniform_real<> dist( 0, 1 );
     static boost::variate_generator< boost::mt19937&, boost::uniform_real<> > flip( rng, dist );
-    static bool do_ignore = comma::less( rate, 1.0 );
+    static bool do_ignore = comma::math::less( rate, 1.0 );
 
     if(deterministic)
     {
@@ -94,7 +95,7 @@ int main( int ac, char** av )
         std::vector< std::string > v = options.unnamed( "", "-s,--size" );
         if( v.empty() ) { std::cerr << "csv-thin: please specify rate" << std::endl; usage(); }
         rate = boost::lexical_cast< double >( v[0] );
-        if(comma::less( rate, 0 ) || comma::less( 1, rate ) ) { std::cerr << "csv-thin: expected rate between 0 and 1, got " << rate << std::endl; usage(); }
+        if(comma::math::less( rate, 0 ) || comma::math::less( 1, rate ) ) { std::cerr << "csv-thin: expected rate between 0 and 1, got " << rate << std::endl; usage(); }
 
         if( binary ) // quick and dirty, improve performance by reading larger buffer
         {

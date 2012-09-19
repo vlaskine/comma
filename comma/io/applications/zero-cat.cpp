@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 
     if ( vm.count("help") )
     {
-        std::cerr << "forward stdin to ZeroMQ publisher or subscribe from ZeroMQ to stdout" << std::endl;
+        std::cerr << "forward stdin to zeromq publisher or subscribe from zeromq to stdout" << std::endl;
         std::cerr << "usage: zero-cat <options> [endpoints]" << std::endl;
         std::cerr << "publisher example: yes hello | zero-cat --publish --size 6 ipc:///tmp/socket tcp://*:5555 -" << std::endl;
         std::cerr << "subscriber example: zero-cat ipc:///tmp/socket tcp://*:5555 " << std::endl;
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
     }
     catch ( zmq::error_t& e )
     {
-        std::cerr << argv[0] << " : ZeroMQ error: " << e.what() << std::endl;
+        std::cerr << argv[0] << " : zeromq error: " << e.what() << std::endl;
     }
     catch ( std::exception& e )
     {

@@ -29,10 +29,10 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include <comma/Application/command_line_options.h>
-#include <comma/Application/SignalFlag.h>
-#include <comma/base/last_error_.h>
-#include <comma/String/String.h>
+#include <comma/application/command_line_options.h>
+#include <comma/application/signal_flag.h>
+#include <comma/base/last_error.h>
+#include <comma/string/string.h>
 #include "./publish.h"
 
 //#include <google/profiler.h>
@@ -69,14 +69,14 @@ int main( int ac, char** av )
 {
     try
     {
-        const boost::array< comma::SignalFlag::Signals, 2 > signals = { { comma::SignalFlag::sigint, comma::SignalFlag::sigterm } };
-        comma::SignalFlag shutdownFlag( signals );
+        const boost::array< comma::signal_flag::signals, 2 > signals = { { comma::signal_flag::sigint, comma::signal_flag::sigterm } };
+        comma::signal_flag is_shutdown( signals );
         comma::command_line_options options( ac, av );
         if( options.exists( "--help" ) || options.exists( "-h" ) ) { usage(); }
         std::vector< std::string > names = options.unnamed( "--no-discard,--verbose,-v,--no-flush", "-n,--number,-m,--multiplier,-b,--buffer,-s,--size" );
         unsigned int n = options.value( "-n,--number", 0 );
         unsigned int packet_size = options.value( "-s,--size", 0 ) * options.value( "-m,--multiplier", 1 );
-        unsigned int bufferSize = options.value( "-b,--buffer", 0 );
+        unsigned int buffer_size = options.value( "-b,--buffer", 0 );
         bool discard = !options.exists( "--no-discard" );
         bool flush = !options.exists( "--no-flush" );
         bool binary = packet_size != 0;
@@ -84,29 +84,29 @@ int main( int ac, char** av )
         if( binary )
         {
             //ProfilerStart( "io-publish.prof" ); {
-            comma::io::applications::publish publish( names, n, bufferSize, packet_size, discard );
-            while( !shutdownFlag && publish.read_bytes() );
+            comma::io::applications::publish publish( names, n, buffer_size, packet_size, discard );
+            while( !is_shutdown && publish.read_bytes() );
             //ProfilerStop(); }
         }
         else
         {
             comma::io::applications::publish publish( names, n, 1, 0, discard, flush );
-            while( !shutdownFlag && std::cin.good() && !std::cin.eof() ) { publish.read_line(); }
+            while( !is_shutdown && std::cin.good() && !std::cin.eof() ) { publish.read_line(); }
         }
-        if( shutdownFlag ) { std::cerr << "io-publish: interrupted by signal" << std::endl; }
+        if( is_shutdown ) { std::cerr << "io-publish: interrupted by signal" << std::endl; }
         return 0;
     }
     catch( std::exception& ex )
     {
         #ifndef WIN32
-        if( comma::last_error_::value() == EINTR || comma::last_error_::value() == EBADF ) { return 0; }
+        if( comma::last_error::value() == EINTR || comma::last_error::value() == EBADF ) { return 0; }
         #endif
         std::cerr << "io-publish: " << ex.what() << std::endl;
     }
     catch( ... )
     {
         #ifndef WIN32
-        if( comma::last_error_::value() == EINTR || comma::last_error_::value() == EBADF ) { return 0; }
+        if( comma::last_error::value() == EINTR || comma::last_error::value() == EBADF ) { return 0; }
         #endif
         std::cerr << "io-publish: unknown exception" << std::endl;
     }

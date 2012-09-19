@@ -25,7 +25,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include <comma/base/last_error_.h>
+#include <comma/base/last_error.h>
 #include <comma/io/file_descriptor.h>
 #include "./publish.h"
 
@@ -40,11 +40,11 @@ publish::publish(const std::vector<std::string> filenames, unsigned int n, unsig
 {
     if( c != 0 )
     {
-        char_buffer_.reset( new comma::CyclicBuffer< std::vector<char> >( c ) );
+        char_buffer_.reset( new comma::cyclic_buffer< std::vector<char> >( c ) );
     }
     if( n != 0 )
     {
-        line_buffer_.reset( new comma::CyclicBuffer< std::string >( n ) );
+        line_buffer_.reset( new comma::cyclic_buffer< std::string >( n ) );
     }
 
     // redirect SIGPIPE to SIG_IGN so that it does not kill the application when it tries to write on a closed pipe

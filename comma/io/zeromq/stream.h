@@ -16,12 +16,12 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with comma. If not, see <http://www.gnu.org/licenses/>.
 
-#include <comma/io/ZeroMQ/istream.h>
-#include <comma/io/ZeroMQ/ostream.h>
+#include <comma/io/zeromq/istream.h>
+#include <comma/io/zeromq/ostream.h>
 
 namespace comma { namespace io {
 
-namespace ZeroMQ {
+namespace zeromq {
 
 template< typename S >
 struct traits
@@ -31,16 +31,16 @@ struct traits
 template<>
 struct traits< std::istream >
 {
-    typedef comma::io::ZeroMQ::istream stream;
+    typedef comma::io::zeromq::istream stream;
 };
 
 template<>
 struct traits< std::ostream >
 {
-    typedef comma::io::ZeroMQ::ostream stream;
+    typedef comma::io::zeromq::ostream stream;
 };
 
-/// get ZeroMQ stream and file descriptor from endpoint
+/// get zeromq stream and file descriptor from endpoint
 template< typename S >
 struct stream
 {

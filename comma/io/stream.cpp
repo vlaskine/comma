@@ -249,7 +249,7 @@ stream< S >::stream( const std::string& name, mode::value m, mode::blocking_valu
             endpoint = "tcp://" + v[1] + ":" + v[2];
         }
         assert( !endpoint.empty() );
-        stream_ = ZeroMQ::stream< S >::create( endpoint, fd_ );
+        stream_ = zeromq::stream< S >::create( endpoint, fd_ );
     }
 #endif
     else if( name == "-" )
