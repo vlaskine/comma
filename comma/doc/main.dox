@@ -2,69 +2,60 @@
 
 @mainpage comma library
 
-
+@n
 @section motivation Motivation
 
-@subsection great_divide Great Divide
-C++ notoriously suffers of the great divide between strongly typed structures and serialized data representation.
+@subsection great_divide Great divide
+Being a non-reflective language, C++ notoriously suffers of the great divide between strongly typed structures and serialized data representation.
 
 If one wants to represent one's C++ objects as XML, JSON, CSV, telecom protocol packets, etc, she or he often needs a number of libraries, often with convoluted, coupled, and opaque interfaces.
 
-The core purpose of the <b>comma</b> library is to cross this great divide in simple, generic, non-intrusive, and decoupled way.
+The core purpose of the <b> @c comma </b> library is to cross this divide in simple, generic, non-intrusive, and decoupled way.
 
-In the spirit of <a href=http://en.wikipedia.org/wiki/Pareto_principle>Pareto Principle</a>, the <b>comma</b> library serves well 70 per cent of common use cases and the practice shows that the remaining 30 per cent tend to never happen.
+In the spirit of <a href=http://en.wikipedia.org/wiki/Pareto_principle>Pareto Principle</a>, the <b> @c comma </b> library serves well 70 per cent of common use cases. The practice shows that the remaining 30 per cent tend to never happen.
+ 
 
 @subsection real_time_data_streams Real time data streams
 
-<b>comma</b> was written to handle heavy streams of data in real time. It makes implementation of communication protocols easy. Often it allows handling third-party data on the fly. It has a toolkit of command-line utilities that can be used to slice and dice offline and real-time data.
-
+<b> @c comma </b> was written to handle heavy streams of data in real time. It makes implementation of communication protocols easy. Often it allows handling third-party data on the fly. Its toolkit of command-line utilities allows to slice and dice offline and real-time data.
+ 
 
 @subsection misc Misc
 
-Additionally, <b>comma</b> implements various generic concepts that seemed to be missing in other open-source libraries at the time of its implementation.
+Additionally, <b> @c comma </b> implements various generic concepts that seemed to be missing in other open-source libraries at the time of its implementation.
 
 
-@section usage_example Usage example
-
-@code
-some_structure s;
-s.a = 123;
-s.b.c = "hello world";
-
-// print as comma-separated values
-comma::csv::ascii_output_stream< some_structure > ostream( std::cout );
-ostream.write( s );
-
-// read from a binary stream
-comma::csv::binary_input_stream< some_structure > istream( std::cin );
-const some_structure* p = istream.read();
-
-// print as xml
-boost::property_tree::ptree t;
-comma::to_ptree( t );
-comma::visiting::apply( to_ptree ).to( s );
-boost::property_tree::write_xml( std::cout, t );
-@endcode
-
-
+@n
 @section library_structure Library overview
+@n
 
-The core concepts of <b>comma</b> are visiting and visitors. Visiting and visitors are fully decoupled. It is easy to write custom visitors.
+The core concepts of <b> @c comma </b> are visiting and visitors. Visiting and visitors are fully decoupled. It is easy to write custom visitors.
 
-@subsection visiting
-- <b>visiting</b> library implements core concepts of non-intrusive visiting of arbitrary classes
+Libraries implementing the core concepts:
 
-@subsection visitors
-- <b>csv</b> comma-separated data visitors and streams
-- <b>name_value</b> name-value style visitors and streams (e.g. xml, json)
+- @b @c csv : comma-separated data visitors and streams
+- @b @c name_value : name-value style visitors and streams (e.g. xml, json)
+- @b @c visiting : library implements core concepts of non-intrusive visiting of arbitrary classes
 
-@subsection packed
-an easy way to define communication protocol packets
+Other libraries:
 
-@todo list all the libraries
+- @b @c application : helper classes: command line options, simple signal handlers
+- @b @c base : integral type definitions, exceptions
+- @b @c containers : cyclic buffer, etc
+- @b @c dispatch : generic double dispath
+- @b @c io : helper classes for socket streams, files streams, etc
+- @b @c math : floating point comparison, intervals, cyclic values, etc
+- @b @c packed : classes for easy definition of communication protocol packets
+- @b @c string : split, join, and other string utilities
+- @b @c xpath : class for xpaths like "/hello/world", "a.b.c[3].d" and operations on them, etc
 
+
+@n
 @section installation Installation
-
+@n
+@subsection linux Linux
+@todo
+@subsection windows Windows
 @todo
 
 
