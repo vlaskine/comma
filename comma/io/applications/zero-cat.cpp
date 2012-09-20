@@ -2,6 +2,8 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/array.hpp>
+#include <comma/io/publisher.h>
+#include <comma/application/signal_flag.h>
 
 int main(int argc, char* argv[])
 {
@@ -9,6 +11,7 @@ int main(int argc, char* argv[])
     {
     unsigned int size;
     std::size_t hwm;
+    std::string server;
     boost::program_options::options_description description( "options" );
     description.add_options()
         ( "help,h", "display help message" )
@@ -16,9 +19,9 @@ int main(int argc, char* argv[])
         ( "connect", "use connect instead of bind" )
         ( "bind", "use bind instead of connect" )
         ( "endl", "output end of line after each packet" )
-        ( "latest", "in subscribe mode: flush the queue and get the latest packet" )
         ( "size,s", boost::program_options::value< unsigned int >( &size )->default_value( 1024 ), "packet size in bytes, in publish mode" )
-        ( "buffer,b", boost::program_options::value< std::size_t >( &hwm )->default_value( 1024 ), "set buffer size in packets ( high water mark in zmq )" );
+        ( "buffer,b", boost::program_options::value< std::size_t >( &hwm )->default_value( 1024 ), "set buffer size in packets ( high water mark in zmq )" )
+        ( "server", boost::program_options::value< std::string >( &server ), "in subscribe mode, republish the data on a socket, eg tcp:1234" );
 
     boost::program_options::variables_map vm;
     boost::program_options::store( boost::program_options::parse_command_line( argc, argv, description), vm );
@@ -43,6 +46,8 @@ int main(int argc, char* argv[])
         std::cerr << "please provide at least one endpoint" << std::endl;
     }
 
+    comma::signal_flag shutdown_flag;
+    
     zmq::context_t context( 1 );
     int mode = ZMQ_SUB;
     if ( vm.count("publish") )
@@ -72,16 +77,13 @@ int main(int argc, char* argv[])
         }
         std::string buffer;
         buffer.resize( size );
-        while( std::cin.good() && !std::cin.eof() && !std::cin.bad() )
+        
+        while( !shutdown_flag.is_set() && std::cin.good() && !std::cin.eof() && !std::cin.bad() )
         {
             std::cin.read( &buffer[0], buffer.size() );
             unsigned int read = std::cin.gcount();
-            if( read > 0 )
+            if( read == size )
             {
-                if( read < size )
-                {
-                    std::cerr << " warning, could not read a full packet " << std::endl; // TODO reassembly ?
-                }
                 zmq::message_t message( buffer.size() );
                 ::memcpy( (void *) message.data (), &buffer[0], buffer.size() );
                 socket.send( message );
@@ -107,48 +109,39 @@ int main(int argc, char* argv[])
             }
         }
         socket.setsockopt( ZMQ_SUBSCRIBE, "", 0 );
-        while( 1 )
+        if( vm.count( "server" ) == 0 )
         {
-            if( vm.count("latest") )
-            {
-                boost::array< zmq::message_t, 2 > message; // double buffer
-                unsigned int index = 0;
-                // read until queue empty
-                bool read = true;
-                bool write = false;
-                while( read )
-                {
-                    read = socket.recv( &message[index], ZMQ_NOBLOCK );
-                    if( read && message[index].size() != 0 )
-                    {
-                        write = true;
-                    }
-                    index++;
-                    index %= 2;
-                    ::usleep( 1000 );
-                }
-                if( write )
-                {
-                    std::cout.write( ( const char* )message[index].data(), message[index].size() );
-                }
-            }
-            else
+            while( std::cout.good() && !std::cout.eof() && !std::cout.bad() )
             {
                 zmq::message_t message;
                 socket.recv( &message );
                 std::cout.write( ( const char* )message.data(), message.size() );
-            }
-            if( endl )
-            {
-                std::cout << std::endl;
-            }
-            else
-            {
-                std::cout.flush();
+                if( endl )
+                {
+                    std::cout << std::endl;
+                }
+                else
+                {
+                    std::cout.flush();
+                }
             }
         }
-    }  
-
+        else
+        {
+            comma::io::publisher publisher( server, comma::io::mode::binary, true, false );
+            while( !shutdown_flag.is_set() )
+            {
+                zmq::message_t message;
+                socket.recv( &message );
+                publisher.write( ( const char* )message.data(), message.size() );
+                if( endl )
+                {
+                    publisher << '\n'/* std::endl*/;
+                }
+            }
+        }
+    }
+    
     }
     catch ( zmq::error_t& e )
     {
@@ -156,7 +149,7 @@ int main(int argc, char* argv[])
     }
     catch ( std::exception& e )
     {
-        std::cerr << argv[0] << " : exception: " << e.what() << std::endl;
+        std::cerr << argv[0] << " : Exception: " << e.what() << std::endl;
     }
 
     return 0;

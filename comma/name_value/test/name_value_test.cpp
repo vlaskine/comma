@@ -17,7 +17,6 @@
 
 #include <gtest/gtest.h>
 #include <comma/name_value/parser.h>
-#include <comma/serialization/to_string.h>
 
 struct nested
 {
@@ -166,21 +165,14 @@ TEST( name_value, get )
 {
     parser named_values("filename,,,,,s");
     hello h = named_values.get<hello>("test.csv;a=2;nested/b=3;nested/c=0.2;unNamed2;world");
-    
     hello expected;
     expected.filename = "test.csv";
     expected.a = 2;
     expected.n.b = 3;
     expected.n.c = 0.2;
     expected.s = "world";
-    
-    EXPECT_EQ( comma::serialization::to_string::apply(h), comma::serialization::to_string::apply(expected) );
-
     parser named_values2("filename",'-', ':', false);
     h = named_values2.get("test.csv-a:2-b:3-c:0.2-s:world", hello());
-
-    EXPECT_EQ( comma::serialization::to_string::apply(h), comma::serialization::to_string::apply(expected) );
-
     EXPECT_THROW( h = named_values.get<hello>("a=b=c;a=2;nested/b=3;nested/c=0.2;unNamed2;s=world"), comma::exception );
     EXPECT_THROW( h = named_values.get<hello>("file=test.csv;a=2;nested/b=3;nested/c=0.2;unNamed2;s=world"), comma::exception );
 }

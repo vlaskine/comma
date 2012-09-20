@@ -13,7 +13,7 @@ ENDIF( NOT WIN32 )
 
 IF( BUILD_ZEROMQ )
 ADD_EXECUTABLE( zero-cat ${dir}/zero-cat.cpp )
-TARGET_LINK_LIBRARIES ( zero-cat ${ZeroMQ_LIBRARY} comma_io boost_program_options )
+TARGET_LINK_LIBRARIES ( zero-cat ${ZeroMQ_LIBRARY} comma_io comma_application boost_program_options )
 INSTALL( TARGETS zero-cat
          RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${comma_INSTALL_BIN_DIR}
          COMPONENT Runtime )
