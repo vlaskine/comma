@@ -14,10 +14,10 @@ SET(comma_RUNTIME_LIBRARY_DIRS_CONFIG ${LIBRARY_OUTPUT_PATH})
 SET(comma_EXECUTABLE_DIRS_CONFIG ${EXECUTABLE_OUTPUT_PATH})
 
 #-----------------------------------------------------------------------------
-# Configure comma_config.cmake for the build tree.
+# Configure comma-config.cmake for the build tree.
 
-CONFIGURE_FILE( ${comma_SOURCE_DIR}/CMakeFiles/comma_config.cmake.in
-                ${comma_BINARY_DIR}/CMakeFiles/comma_config.cmake @ONLY IMMEDIATE )
+CONFIGURE_FILE( ${comma_SOURCE_DIR}/CMakeFiles/comma-config.cmake.in
+                ${comma_BINARY_DIR}/CMakeFiles/comma-config.cmake @ONLY IMMEDIATE )
 
 #-----------------------------------------------------------------------------
 # Settings specific to the install tree.
@@ -54,7 +54,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 #-----------------------------------------------------------------------------
-# Configure comma_config.cmake for the install tree.
+# Configure comma-config.cmake for the install tree.
 
 # Construct the proper number of GET_FILENAME_COMPONENT(... PATH)
 # calls to compute the installation prefix from comma_DIR.
@@ -78,8 +78,8 @@ IF(CMAKE_CONFIGURATION_TYPES)
   # QConfig.cmake for each configuration.
   FOREACH(config ${CMAKE_CONFIGURATION_TYPES})
     SET(comma_BUILD_TYPE_CONFIG ${config})
-    CONFIGURE_FILE(${comma_SOURCE_DIR}/CMakeFiles/comma_config.cmake.in
-                   ${comma_BINARY_DIR}/Utilities/${config}/comma_config.cmake
+    CONFIGURE_FILE(${comma_SOURCE_DIR}/CMakeFiles/comma-config.cmake.in
+                   ${comma_BINARY_DIR}/Utilities/${config}/comma-config.cmake
                    @ONLY IMMEDIATE)
   ENDFOREACH(config)
 
@@ -88,20 +88,20 @@ IF(CMAKE_CONFIGURATION_TYPES)
   # will be set while CMake is processing the install files.
   INSTALL(
     FILES
-      "${comma_BINARY_DIR}/Utilities/\${BUILD_TYPE}/comma_config.cmake"
+      "${comma_BINARY_DIR}/Utilities/\${BUILD_TYPE}/comma-config.cmake"
     DESTINATION ${comma_INSTALL_PACKAGE_DIR}
   )
 
 ELSE(CMAKE_CONFIGURATION_TYPES)
   # There is only one build configuration.  Configure one QConfig.cmake.
   SET(comma_BUILD_TYPE_CONFIG ${CMAKE_BUILD_TYPE})
-  CONFIGURE_FILE(${comma_SOURCE_DIR}/CMakeFiles/comma_config.cmake.in
-                 ${comma_BINARY_DIR}/Utilities/comma_config.cmake @ONLY IMMEDIATE)
+  CONFIGURE_FILE(${comma_SOURCE_DIR}/CMakeFiles/comma-config.cmake.in
+                 ${comma_BINARY_DIR}/Utilities/comma-config.cmake @ONLY IMMEDIATE)
 
   # Setup an install rule for the config file.
   INSTALL(
     FILES
-      "${comma_BINARY_DIR}/Utilities/comma_config.cmake"
+      "${comma_BINARY_DIR}/Utilities/comma-config.cmake"
     DESTINATION ${comma_INSTALL_PACKAGE_DIR}
   )
 ENDIF(CMAKE_CONFIGURATION_TYPES)

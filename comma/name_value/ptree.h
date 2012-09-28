@@ -50,7 +50,7 @@ struct property_tree // quick and dirty
     static void to_name_value( std::ostream& os, const boost::property_tree::ptree& ptree, bool indented = true, char equalSign = '=', char delimiter = ',' );
     
     /// write as path-value to output stream
-    static void to_path_value( std::ostream& os, const boost::property_tree::ptree& ptree, char equalSign = '=', char delimiter = ',' );
+    static void to_path_value( std::ostream& os, const boost::property_tree::ptree& ptree, char equalSign = '=', char delimiter = ',', const comma::xpath& root = comma::xpath() );
     
     /// read as name-value from input stream
     /// @todo currently only line-based input supported
@@ -269,12 +269,13 @@ inline static void ptree_to_name_value_string_impl( std::ostream& os, boost::pro
     }
 }
 
-inline static void ptree_to_path_value_string_impl( std::ostream& os, boost::property_tree::ptree::const_iterator i, bool is_begin, xpath& path, char equalSign, char delimiter )
+inline static void ptree_to_path_value_string_impl( std::ostream& os, boost::property_tree::ptree::const_iterator i, bool is_begin, xpath& path, char equalSign, char delimiter, const std::string& root )
 {
     if( i->second.begin() == i->second.end() )
     {
         if( !is_begin ) { os << delimiter; }
         is_begin = false;
+        if( root != "" ) { os << root << "/"; }
         if( !path.elements.empty() ) { os << path.to_string() << "/"; }
         os << i->first << equalSign;
         os << '"' << i->second.get_value< std::string >() << '"';
@@ -284,7 +285,7 @@ inline static void ptree_to_path_value_string_impl( std::ostream& os, boost::pro
         path /= i->first;
         for( boost::property_tree::ptree::const_iterator j = i->second.begin(); j != i->second.end(); ++j )
         {
-            ptree_to_path_value_string_impl( os, j, is_begin, path, equalSign, delimiter );
+            ptree_to_path_value_string_impl( os, j, is_begin, path, equalSign, delimiter, root );
             is_begin = false;
         }
         path = path.head();
@@ -302,12 +303,12 @@ inline void property_tree::to_name_value( std::ostream& os, const boost::propert
     if( indented ) { os << std::endl; } // quick and dirty
 }
 
-inline void property_tree::to_path_value( std::ostream& os, const boost::property_tree::ptree& ptree, char equalSign, char delimiter )
+inline void property_tree::to_path_value( std::ostream& os, const boost::property_tree::ptree& ptree, char equalSign, char delimiter, const comma::xpath& root )
 {
     for( boost::property_tree::ptree::const_iterator i = ptree.begin(); i != ptree.end(); ++i )
     {
         xpath path;
-        Impl::ptree_to_path_value_string_impl( os, i, i == ptree.begin(), path, equalSign, delimiter );
+        Impl::ptree_to_path_value_string_impl( os, i, i == ptree.begin(), path, equalSign, delimiter, root.to_string() ); // quick and dirty
     }
 }
 

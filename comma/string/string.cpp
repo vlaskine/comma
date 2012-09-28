@@ -42,4 +42,3 @@ std::string strip( const std::string& s, const char* characters )
 }
 
 } // namespace comma {
-    
