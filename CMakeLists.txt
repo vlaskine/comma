@@ -71,7 +71,7 @@ SET( comma_BUILD_TESTS ${BUILD_TESTS} )
 OPTION( BUILD_APPLICATIONS "build applications" OFF )
 SET( comma_BUILD_APPLICATIONS ${BUILD_APPLICATIONS} )
 
-OPTION( comma_BUILD_ZEROMQ "build zeromq application" OFF )
+OPTION( comma_BUILD_ZEROMQ "build io with zeromq support" OFF )
 
 IF( WIN32 )
 OPTION(BUILD_SHARED_LIBS "build with shared libraries" OFF)
@@ -96,11 +96,10 @@ IF( comma_BUILD_TESTS )
     SET( GTEST_BOTH_LIBRARIES gtest gtest_main )
 ENDIF( comma_BUILD_TESTS )
 
-OPTION( BUILD_ZEROMQ "build io with zeromq support" OFF )
-IF( BUILD_ZEROMQ )
+IF( comma_BUILD_ZEROMQ )
     SET( ZeroMQ_LIBRARY "zmq" )
     ADD_DEFINITIONS( -DUSE_ZEROMQ )
-ENDIF( BUILD_ZEROMQ )
+ENDIF( comma_BUILD_ZEROMQ )
 
 SET( comma_ALL_LIBRARIES 
         debug comma_application-d
@@ -126,16 +125,13 @@ ENDIF(UNIX AND NOT QNXNTO AND NOT APPLE)
 
 SET( comma_ALL_EXTERNAL_LIBRARIES ${comma_ALL_EXTERNAL_LIBRARIES} ${Boost_LIBRARIES} )
 SET( comma_ALL_EXTERNAL_LIBRARIES ${comma_ALL_EXTERNAL_LIBRARIES} )
-if( comma_BUILD_ZEROMQ )
-    SET( comma_ALL_EXTERNAL_LIBRARIES ${comma_ALL_EXTERNAL_LIBRARIES} zmq )
-endif( comma_BUILD_ZEROMQ )
 
 SET( comma_ALL_LIBRARIES ${comma_ALL_LIBRARIES} ${comma_ALL_LIBRARIES} ${comma_ALL_EXTERNAL_LIBRARIES} ) # as gcc parses library list only once
 SET( comma_EXTERNAL_INCLUDES ${Boost_INCLUDE_DIRS} )
 
-IF( BUILD_ZEROMQ )
+IF( comma_BUILD_ZEROMQ )
     SET( comma_ALL_EXTERNAL_LIBRARIES ${comma_ALL_EXTERNAL_LIBRARIES} ${ZeroMQ_LIBRARY} )
-ENDIF( BUILD_ZEROMQ )
+ENDIF( comma_BUILD_ZEROMQ )
 
 ADD_CUSTOM_TARGET( uninstall
     COMMAND ${CMAKE_COMMAND} -D CMAKE_INSTALL_MANIFEST="${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt" -P ${CMAKE_CURRENT_SOURCE_DIR}/CMakeFiles/cmake_uninstall.cmake )
