@@ -11,13 +11,13 @@ ADD_EXECUTABLE( udp-client ${dir}/udp-client.cpp )
 TARGET_LINK_LIBRARIES ( udp-client comma_application comma_io comma_base ${comma_EXTERNAL_ALL_LIBRARIES} ) # profiler )
 ENDIF( NOT WIN32 )
 
-IF( BUILD_ZEROMQ )
+IF( comma_BUILD_ZEROMQ )
 ADD_EXECUTABLE( zero-cat ${dir}/zero-cat.cpp )
 TARGET_LINK_LIBRARIES ( zero-cat ${ZeroMQ_LIBRARY} comma_io comma_application boost_program_options )
 INSTALL( TARGETS zero-cat
          RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${comma_INSTALL_BIN_DIR}
          COMPONENT Runtime )
-ENDIF( BUILD_ZEROMQ )
+ENDIF( comma_BUILD_ZEROMQ )
 
 IF( NOT WIN32 )
 INSTALL( TARGETS udp-client
