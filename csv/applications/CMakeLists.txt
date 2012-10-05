@@ -28,7 +28,7 @@ TARGET_LINK_LIBRARIES ( csv-split ${comma_ALL_EXTERNAL_LIBRARIES} comma_applicat
 TARGET_LINK_LIBRARIES ( csv-join ${comma_ALL_EXTERNAL_LIBRARIES} comma_application comma_csv comma_io comma_xpath comma_string )
 TARGET_LINK_LIBRARIES ( csv-paste ${comma_ALL_EXTERNAL_LIBRARIES} comma_application comma_string comma_csv comma_io )
 #TARGET_LINK_LIBRARIES ( csv-make-blocks ${comma_ALL_EXTERNAL_LIBRARIES} comma_application comma_csv comma_xpath comma_string )
-TARGET_LINK_LIBRARIES ( csv-time ${comma_ALL_EXTERNAL_LIBRARIES} comma_application ArkTiming )
+TARGET_LINK_LIBRARIES ( csv-time ${comma_ALL_EXTERNAL_LIBRARIES} comma_application )
 TARGET_LINK_LIBRARIES ( csv-time-delay ${comma_ALL_EXTERNAL_LIBRARIES} comma_application comma_csv comma_string comma_xpath )
 TARGET_LINK_LIBRARIES ( csv-time-join ${comma_ALL_EXTERNAL_LIBRARIES} comma_application comma_csv comma_io comma_string comma_xpath )
 TARGET_LINK_LIBRARIES ( csv-time-stamp ${comma_ALL_EXTERNAL_LIBRARIES} comma_application comma_csv comma_string )
